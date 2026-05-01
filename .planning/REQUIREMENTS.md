@@ -31,130 +31,94 @@ Ollamac v3.0.3 provides core chat functionality with Ollama:
 
 ---
 
-## V2 Requirements (Next Major Version)
+## V2 Requirements: MCP Integration
+**Core Objective**: Enable Ollamac to use **Ollama + MCP** together, where MCP extends LLM capabilities with external tools/resources. User already has working MCP integration for emails (Vibe/Claude), so we only need to enable MCP support in Ollamac.
 
-### 🎯 Core Objectives
-1. **Improve Code Quality & Maintainability**
-2. **Add Comprehensive Testing**
-3. **Address Security Concerns**
-4. **Enhance Performance & Scalability**
+### Epic 1: Architecture for MCP Support
+**Priority**: P0 (Critical - blocks MCP)
 
-### Epic 1: Architecture Improvements
-**Priority**: P0 (Critical)
-
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-001 | Introduce Dependency Injection | Decouple ViewModels from OllamaKit | ViewModels accept protocol-based dependencies | Medium | Low |
-| R-002 | Extract Network Layer Abstraction | Create protocol for Ollama API | Mockable for testing, swappable implementations | Medium | Low |
-| R-003 | Separate Business Logic from UI | Move logic out of views | ViewModels contain only state, not presentation logic | Medium | Low |
-| R-004 | Add MVVM Data Flow Documentation | Document architecture patterns | Clear docs for contributors | Small | Low |
+| ID | Requirement | Description | Acceptance Criteria | Effort | Risk | MCP Impact |
+|----|-------------|-------------|---------------------|--------|------|------------|
+| R-001 | Introduce Dependency Injection | Decouple ViewModels from OllamaKit | ViewModels accept dependencies via constructor | Medium | Low | **BLOCKS MCP** |
+| R-002 | Create Network Layer Abstraction | Protocol for chat backends | Mockable, supports Ollama + MCP | Medium | Low | **BLOCKS MCP** |
+| R-003 | Separate Business Logic from UI | Move logic out of views | ViewModels contain only state | Medium | Low | Improves maintainability |
+| R-004 | Add MVVM Data Flow Documentation | Document architecture patterns | Clear docs for contributors | Small | Low | Documentation |
+| NEW | Create MCP Client Interface | Define MCP client protocol | Can connect to MCP servers, list/execute tools | Medium | Low | **CORE MCP** |
+| NEW | Create MCP Server Configuration | Store MCP server endpoints | Multiple servers, enable/disable | Small | Low | **CORE MCP** |
 
 ### Epic 2: Testing Infrastructure
-**Priority**: P0 (Critical)
+**Priority**: P0 (Critical - blocks MCP verification)
 
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-010 | Add Unit Test Target | Create OllamacTests target | Tests compile and run | Small | Low |
-| R-011 | Mock OllamaKit for Testing | Create MockOllamaKit | Can simulate all API responses | Medium | Low |
-| R-012 | Test Message Generation | Test streaming logic | 80% coverage of MessageViewModel.generate() | Medium | Medium |
-| R-013 | Test Chat Persistence | Test SwiftData operations | All CRUD operations tested | Medium | Medium |
-| R-014 | Test Error Handling | Test error paths | All error cases covered | Medium | Medium |
-| R-015 | Add UI Tests | Test main user journeys | Critical paths: create chat, send message, switch chats | Medium | Medium |
-| R-016 | Setup CI Pipeline | GitHub Actions for build & test | Tests run on every PR | Medium | Low |
-| R-017 | Add Code Coverage Reporting | Enable coverage in CI | Coverage visible in PRs | Small | Low |
+| ID | Requirement | Description | Acceptance Criteria | Effort | Risk | MCP Impact |
+|----|-------------|-------------|---------------------|--------|------|------------|
+| R-010 | Add Unit Test Target | Create OllamacTests target | Tests compile and run | Small | Low | **BLOCKS MCP** |
+| R-011 | Mock OllamaKit for Testing | Create MockOllamaKit | Can simulate all API responses | Medium | Low | **BLOCKS MCP** |
+| NEW | Mock MCP Client for Testing | Create MockMCPClient | Can simulate tool calls/responses | Medium | Low | **CORE MCP** |
+| R-012 | Test Message Generation | Test streaming logic | 80% coverage of MessageViewModel.generate() | Medium | Medium | Verification |
+| R-014 | Test Chat Persistence | Test SwiftData operations | All CRUD operations tested | Medium | Medium | Verification |
+| R-016 | Setup CI Pipeline | GitHub Actions for build & test | Tests run on every PR | Medium | Low | Quality |
+| R-017 | Add Code Coverage Reporting | Enable coverage in CI | Coverage visible in PRs | Small | Low | Quality |
 
-### Epic 3: Security Enhancements
-**Priority**: P0 (Critical)
+### Epic 3: MCP Client Implementation
+**Priority**: P0 (Core MCP functionality)
 
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-020 | Add HTTPS Support | Support encrypted connections to Ollama | Can configure HTTPS endpoints | Medium | Medium |
-| R-021 | Implement Certificate Pinning | Validate server certificates | Prevents MITM attacks | Medium | Medium |
-| R-022 | Add Input Validation | Validate host URLs and user input | All inputs validated before use | Medium | Low |
-| R-023 | Sanitize Markdown Content | Prevent markdown injection | Safe rendering of AI responses | Medium | Low |
-| R-024 | Add Host Validation | Validate URL schemes and formats | Only valid HTTP/HTTPS URLs accepted | Small | Low |
+| ID | Requirement | Description | Acceptance Criteria | Effort | Risk | MCP Impact |
+|----|-------------|-------------|---------------------|--------|------|------------|
+| NEW | Implement MCP Client | Connect to MCP servers | Can discover and call tools | Medium | Medium | **CORE MCP** |
+| NEW | Implement Tool Discovery | List available MCP tools | Tools shown in UI | Small | Low | **CORE MCP** |
+| NEW | Implement Tool Execution | Call MCP tools, get results | Tools work during chat | Medium | Medium | **CORE MCP** |
+| NEW | Handle Tool Results in Chat | Display tool outputs | Results integrated in chat | Medium | Medium | **CORE MCP** |
+| NEW | MCP Error Handling | Graceful error handling | MCP errors don't break chat | Small | Low | **CORE MCP** |
 
-### Epic 4: Performance & Scalability
-**Priority**: P1 (High)
+### Epic 4: MCP + Ollama Integration
+**Priority**: P0 (Core functionality)
 
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-030 | Implement Pagination | Load chats lazily | Only visible chats loaded | Medium | Low |
-| R-031 | Add Model Caching | Cache available models | Models fetched once, refreshed periodically | Small | Low |
-| R-032 | Lazy Load Messages | Load messages on-demand | Only visible messages loaded | Medium | Medium |
-| R-033 | Optimize Syntax Highlighting | Improve performance | No lag with code highlighting enabled | Medium | Medium |
-| R-034 | Add Debouncing | Prevent rapid state changes | No network thrashing on rapid actions | Small | Low |
+| ID | Requirement | Description | Acceptance Criteria | Effort | Risk | MCP Impact |
+|----|-------------|-------------|---------------------|--------|------|------------|
+| NEW | Integrate MCP in Chat Flow | Use MCP during Ollama chat | LLM can use MCP tools | Medium | Medium | **CORE MCP** |
+| NEW | Streaming with Tool Calls | Handle tools in streaming | Tool calls don't block streaming | Medium | Medium | **CORE MCP** |
+| NEW | MCP Server Management UI | Configure MCP servers | Users can add/remove servers | Medium | Low | **CORE MCP** |
+| NEW | MCP Server Connection Testing | Test server connections | Users can verify servers work | Small | Low | UX |
 
-### Epic 5: Code Quality
-**Priority**: P1 (High)
+### Epic 5: Code Quality Improvements
+**Priority**: P1 (Nice to have, not blocking)
 
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-040 | Extract Common Streaming Logic | Reduce duplication | Single source of truth for streaming | Small | Low |
-| R-041 | Unify Think Tag Handling | Consistent approach | Same logic in all places | Small | Low |
-| R-042 | Centralize Configuration | Single config file | All defaults in one place | Small | Low |
-| R-043 | Add Documentation | Code and architecture docs | All public APIs documented | Medium | Low |
-| R-044 | Add SwiftLint | Style enforcement | Linting passes on CI | Small | Low |
-| R-045 | Add Swift Format | Consistent formatting | Auto-formatting on CI | Small | Low |
-
-### Epic 6: User Experience
-**Priority**: P1 (High)
-
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-050 | Add Export Functionality | Export chats as files | Can export individual chats | Medium | Low |
-| R-051 | Add Auto-Save | Save partial responses | No data loss on interruptions | Medium | Medium |
-| R-052 | Add Error Recovery | Auto-retry failed requests | Transparent recovery for user | Medium | Medium |
-| R-053 | Add Accessibility | VoiceOver, dynamic type | WCAG compliance | Medium | Medium |
-| R-054 | Add Localization | Multi-language support | At least 2 languages | Large | Medium |
-| R-055 | Add Keyboard Navigation | Full keyboard support | All features accessible via keyboard | Medium | Medium |
-
-### Epic 7: Developer Experience
-**Priority**: P2 (Medium)
-
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-060 | Create CONTRIBUTING.md | Contribution guidelines | Clear instructions for contributors | Small | Low |
-| R-061 | Add Code Review Process | PR template, checklist | Consistent review process | Small | Low |
-| R-062 | Add Issue Templates | Bug report, feature request | Better issue quality | Small | Low |
-| R-063 | Setup Development Docs | Getting started guide | New contributors can build/run | Small | Low |
-
-### Epic 8: Future Enhancements
-**Priority**: P2 (Medium) - Out of V2 Scope
-
-| ID | Requirement | Description | Acceptance Criteria | Effort | Risk |
-|----|-------------|-------------|---------------------|--------|------|
-| R-070 | Add Plugins/Extensions | Extensible architecture | Third-party plugins possible | Large | High |
-| R-071 | Add Multi-Window Support | Multiple chat windows | Each chat in separate window | Medium | Medium |
-| R-072 | Add Chat Search | Search across chats | Full-text search of messages | Medium | Medium |
-| R-073 | Add Model Fine-Tuning UI | Configure model parameters | All Ollama options exposed | Medium | Medium |
-| R-074 | Add Team/Collaboration | Shared chats | Real-time collaboration | Large | High |
-| R-075 | Add Cloud Sync | Sync chats across devices | Seamless cross-device experience | Large | High |
+| ID | Requirement | Description | Acceptance Criteria | Effort | Risk | MCP Impact |
+|----|-------------|-------------|---------------------|--------|------|------------|
+| R-040 | Extract Common Streaming Logic | Reduce duplication | Single source of truth | Small | Low | Maintenance |
+| R-041 | Unify Think Tag Handling | Consistent approach | Same logic everywhere | Small | Low | Maintenance |
+| R-042 | Centralize Configuration | Single config file | All defaults in one place | Small | Low | Maintenance |
+| R-043 | Add Code Documentation | Code and architecture docs | All public APIs documented | Medium | Low | Documentation |
+| R-044 | Add SwiftLint | Style enforcement | Linting passes on CI | Small | Low | Quality |
+| R-045 | Add Swift Format | Consistent formatting | Auto-formatting on CI | Small | Low | Quality |
 
 ---
 
 ## Requirement Categories
 
-### Must Have (P0)
-- R-001 to R-004: Architecture improvements (DI, abstractions)
-- R-010 to R-017: Testing infrastructure
-- R-020 to R-024: Security enhancements
+### Must Have (P0) - **Blocks MCP Integration**
+- R-001 to R-002: Architecture improvements (DI, abstractions) - **CRITICAL**
+- R-010 to R-011, NEW Mocks: Testing infrastructure - **CRITICAL**
+- NEW MCP Client: Core MCP functionality - **CRITICAL**
+- NEW MCP Integration: Ollama + MCP together - **CRITICAL**
 
-### Should Have (P1)
-- R-030 to R-034: Performance & scalability
-- R-040 to R-045: Code quality
-- R-050 to R-055: User experience
+### Should Have (P1) - **Improves MCP Experience**
+- NEW MCP Streaming: Seamless tool calls - **IMPORTANT**
+- NEW Server Management: User configuration - **IMPORTANT**
+- R-040 to R-045: Code quality - **NICE TO HAVE**
 
-### Nice to Have (P2)
-- R-060 to R-063: Developer experience
-- R-070 to R-075: Future enhancements
+### Nice to Have (P2) - **Future Enhancements**
+- Plugins/Extensions architecture (for third-party MCP servers)
+- Advanced tool management
+- Performance optimizations
 
-### Out of Scope (Current)
+### Out of Scope
 - Windows/Linux ports
 - Mobile apps (iOS/iPadOS)
 - Web version
 - Commercial features
 - Cloud hosting
+- **E-Mail specific features** (user already has MCP integration for this)
 
 ---
 
@@ -163,46 +127,106 @@ Ollamac v3.0.3 provides core chat functionality with Ollama:
 ### Technical Dependencies
 | Requirement | Depends On | Reason |
 |-------------|------------|--------|
-| R-011 | R-001 | Need DI to inject mocks |
-| R-012, R-013, R-014 | R-010, R-011 | Need test infrastructure |
-| R-015 | R-010 | Need test target |
-| R-016, R-017 | R-010 | Need tests before CI |
-| R-050 | R-001 | Need architecture cleanup |
+| NEW MCP Client | R-001, R-002 | Need DI and abstraction for MCP |
+| NEW Mock MCP Client | R-010, NEW MCP Client | Need test infrastructure and client |
+| NEW MCP Integration | NEW MCP Client | Need client to integrate |
+| NEW Streaming with Tools | NEW MCP Integration | Need integration first |
+| R-012, R-014 | R-010, R-011 | Need test infrastructure |
 
-### Resource Dependencies
-- All development requires macOS 14.0+
-- All development requires Xcode 15+
-- Testing requires Ollama server for integration tests
-- CI requires macOS runner
+### MCP-Specific Dependencies
+- MCP specification (modelcontextprotocol.io)
+- User's existing MCP email integration
+- Test MCP servers for integration testing
 
 ---
 
 ## Assumptions
-1. Ollama API will remain stable (v1 compatibility)
-2. Swift 5.9+ features will remain supported
-3. Sparkle will continue to support macOS updates
-4. External frameworks will maintain compatibility
-5. Project will remain open-source
+1. MCP specification is stable enough for implementation
+2. User's existing MCP email integration is compatible with Ollamac's needs
+3. MCP servers can be configured by users (endpoint URLs)
+4. Ollama will continue to support the current chat API
+5. MCP tool calls can be integrated into the existing streaming flow
 
 ---
 
 ## Constraints
-1. Must maintain backward compatibility with existing chats
+1. Must maintain backward compatibility with existing Ollama chats
 2. Must maintain macOS 14.0+ support
 3. Must maintain free/open-source license
-4. Must pass App Store review (if submitted)
-5. Must work with Homebrew distribution
+4. MCP integration should be optional (users can disable it)
+5. Should work with any MCP-compliant server
 
 ---
 
-## Success Criteria for V2
-- [ ] All P0 requirements implemented
-- [ ] Test coverage >= 70%
-- [ ] All security critical issues addressed
-- [ ] No breaking changes for existing users
-- [ ] Documentation complete
+## MCP Integration Architecture
+
+### High-Level Design
+```
+Ollamac (SwiftUI)
+├── ChatView
+│   └── MessageViewModel
+│       ├── ChatBackend (Protocol)  ← NEW
+│       │   ├── OllamaBackend      ← Existing (refactored)
+│       │   └── MCPBackend         ← NEW
+│       │       └── MCPClient     ← NEW
+│       │           └── MCPServerConnection
+│       │               └── MCPToolExecutor
+│       └── Message Processing
+│           └── MCP Tool Call Handler ← NEW
+└── Settings
+    └── MCP Server Configuration ← NEW
+```
+
+### Chat Flow with MCP
+```
+User sends message
+   ↓
+MessageViewModel receives message
+   ↓
+OllamaBackend sends to Ollama (via ChatBackend protocol)
+   ↓
+LLM responds with text + optional MCP tool calls
+   ↓
+IF tool calls present:
+   ├─ MCPBackend executes tools via MCPClient
+   ├─ Tool results returned to LLM context
+   └─ LLM continues response with tool results
+   ↓
+Full response (text + tool results) displayed to user
+```
+
+### Key Interfaces
+```swift
+// ChatBackend Protocol (NEW)
+protocol ChatBackend {
+    func sendMessage(prompt: String, context: ChatContext) async throws -> AsyncThrowingStream<ChatChunk, Error>
+    func listModels() async throws -> [Model]
+    // ...
+}
+
+// MCPClient Protocol (NEW)
+protocol MCPClient {
+    func connect(to server: MCPServerConfig) async throws
+    func listTools() async throws -> [MCPTool]
+    func callTool(name: String, arguments: [String: Any]) async throws -> MCPToolResult
+    // ...
+}
+```
+
+---
+
+## Success Criteria for V2 (MCP Support)
+- [ ] Ollamac can connect to MCP servers
+- [ ] LLM can discover and use MCP tools during chat
+- [ ] MCP tool results are displayed in chat
+- [ ] Users can configure MCP servers
+- [ ] MCP integration is optional (can be disabled)
+- [ ] Existing Ollama functionality unchanged
+- [ ] Test coverage for MCP features >= 70%
+- [ ] Documentation updated
 - [ ] CI pipeline passing
 
 ---
-*Requirements defined based on codebase analysis and project goals*
-*V1 = Current state, V2 = Next major version*
+*Requirements defined for MCP integration*
+*V1 = Current state, V2 = MCP-enabled version*
+*E-Mail features excluded (user has existing MCP integration)*
