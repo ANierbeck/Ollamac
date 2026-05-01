@@ -6,7 +6,6 @@
 //
 
 import Defaults
-import OllamaKit
 import SwiftData
 import SwiftUI
 
@@ -15,6 +14,8 @@ import SwiftUI
 final class ChatViewModel {
     private var modelContext: ModelContext
     private var _chatNameTemp: String = ""
+    
+    @Environment(ChatBackend.self) private var chatBackend
     
     var models: [String] = []
     
@@ -49,7 +50,7 @@ final class ChatViewModel {
         self.modelContext = modelContext
     }
     
-    func fetchModels(_ ollamaKit: OllamaKit) {
+    func fetchModels() {
         self.loading = .fetchModels
         self.error = nil
         
@@ -57,18 +58,20 @@ final class ChatViewModel {
             do {
                 defer { self.loading = nil }
                 
-                let isReachable = await ollamaKit.reachable()
+                let isReachable = await chatBackend.reachable()
                 
                 guard isReachable else {
-                    self.error = .fetchModels("Unable to connect to Ollama server. Please verify that Ollama is running and accessible.")
+                    self.isHostReachable = false
+                    self.error = .fetchModels("Unable to connect to server. Please verify that the server is running and accessible.")
                     return
                 }
                 
-                let response = try await ollamaKit.models()
-                self.models = response.models.map { $0.name }
+                self.isHostReachable = true
+                let models = try await chatBackend.listModels()
+                self.models = models
                 
                 guard !self.models.isEmpty else {
-                    self.error = .fetchModels("You don't have any Ollama model. Please pull at least one Ollama model first.")
+                    self.error = .fetchModels("No models available. Please pull at least one model first.")
                     return
                 }
                 

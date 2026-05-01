@@ -7,7 +7,6 @@
 
 import Defaults
 import ChatField
-import OllamaKit
 import SwiftUI
 import ViewCondition
 
@@ -20,16 +19,10 @@ struct ChatView: View {
     @AppStorage("experimentalCodeHighlighting") private var experimentalCodeHighlighting = false
     @Default(.fontSize) private var fontSize
 
-    @State private var ollamaKit: OllamaKit
     @State private var prompt: String = ""
     @State private var scrollProxy: ScrollViewProxy? = nil
     @State private var isPreferencesPresented: Bool = false
     @FocusState private var isFocused: Bool
-
-    init() {
-        let baseURL = URL(string: Defaults[.defaultHost])!
-        self._ollamaKit = State(initialValue: OllamaKit(baseURL: baseURL))
-    }
     
     var body: some View {
         ScrollViewReader { proxy in
@@ -131,11 +124,20 @@ struct ChatView: View {
             }
         }
         .inspector(isPresented: $isPreferencesPresented) {
-            ChatPreferencesView(ollamaKit: $ollamaKit)
+            ChatPreferencesView()
                 .inspectorColumnWidth(min: 320, ideal: 320)
         }
+        .environment(\.chatBackend, createChatBackend())
     }
     
+    private func createChatBackend() -> any ChatBackend {
+        if let activeChat = chatViewModel.activeChat, let host = activeChat.host, let baseURL = URL(string: host) {
+            return OllamaBackend(baseURL: baseURL)
+        }
+        let baseURL = URL(string: Defaults[.defaultHost])!
+        return OllamaBackend(baseURL: baseURL)
+    }
+
     private func onActiveChatChanged() {
         self.prompt = ""
         if chatViewModel.shouldFocusPrompt {
@@ -149,8 +151,7 @@ struct ChatView: View {
         }
 
         if let activeChat = chatViewModel.activeChat, let host = activeChat.host, let baseURL = URL(string: host) {
-            self.ollamaKit = OllamaKit(baseURL: baseURL)
-            self.chatViewModel.fetchModels(self.ollamaKit)
+            chatViewModel.fetchModels()
         }
     }
     
@@ -173,7 +174,7 @@ struct ChatView: View {
 
             guard let activeChat = chatViewModel.activeChat else { return }
             
-            messageViewModel.generate(ollamaKit, activeChat: activeChat, prompt: prompt)
+            messageViewModel.generate(activeChat: activeChat, prompt: prompt)
         }
         
         self.prompt = ""
@@ -187,7 +188,7 @@ struct ChatView: View {
         } else {
             guard let activeChat = chatViewModel.activeChat else { return }
             
-            messageViewModel.regenerate(ollamaKit, activeChat: activeChat)
+            messageViewModel.regenerate(activeChat: activeChat)
         }
         
         prompt = ""

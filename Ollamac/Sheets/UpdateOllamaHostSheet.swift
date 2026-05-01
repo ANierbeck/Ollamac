@@ -5,7 +5,6 @@
 //  Created by Kevin Hermawan on 8/7/24.
 //
 
-import OllamaKit
 import SwiftUI
 import ViewState
 
@@ -66,10 +65,10 @@ struct UpdateOllamaHostSheet: View {
                 return
             }
             
-            let ollamaKit = OllamaKit(baseURL: baseURL)
+            let backend = OllamaBackend(baseURL: baseURL)
             
-            guard await ollamaKit.reachable() else {
-                viewState = .error(message: "The Ollama host is not reachable")
+            guard await backend.reachable() else {
+                viewState = .error(message: "The host is not reachable")
                 return
             }
             

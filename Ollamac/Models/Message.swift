@@ -72,4 +72,50 @@ extension Message {
         
         return data
     }
+
+    func toChatRequest(messages: [Message]) -> ChatRequest {
+        var chatMessages = [ChatMessage]()
+
+        for message in messages {
+            let userMessage = ChatMessage(role: .user, content: message.prompt)
+            let assistantMessage = ChatMessage(role: .assistant, content: message.response ?? "")
+
+            chatMessages.append(userMessage)
+            chatMessages.append(assistantMessage)
+        }
+
+        if let systemPrompt = self.chat?.systemPrompt {
+            let systemMessage = ChatMessage(role: .system, content: systemPrompt)
+            chatMessages.insert(systemMessage, at: 0)
+        }
+
+        let options = ChatOptions(
+            temperature: self.chat?.temperature,
+            topK: self.chat?.topK,
+            topP: self.chat?.topP
+        )
+
+        return ChatRequest(
+            model: self.model,
+            messages: chatMessages,
+            options: options
+        )
+    }
+
+    static func toTitleChatRequest(messages: [Message], model: String) -> ChatRequest {
+        var chatMessages = [ChatMessage]()
+
+        for message in messages {
+            let userMessage = ChatMessage(role: .user, content: message.prompt)
+            let assistantMessage = ChatMessage(role: .assistant, content: message.response ?? "")
+
+            chatMessages.append(userMessage)
+            chatMessages.append(assistantMessage)
+        }
+
+        let userMessage = ChatMessage(role: .user, content: "Just reply with a short title about this conversation. One line maximum. No markdown.")
+        chatMessages.append(userMessage)
+
+        return ChatRequest(model: model, messages: chatMessages, options: nil)
+    }
 }

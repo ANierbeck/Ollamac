@@ -6,14 +6,16 @@
 //
 
 import Foundation
-import OllamaKit
 import SwiftData
+import SwiftUI
 
 @MainActor
 @Observable
 final class MessageViewModel {
     private var modelContext: ModelContext
     private var generationTask: Task<Void, Never>?
+    
+    @Environment(ChatBackend.self) private var chatBackend
     
     var messages: [Message] = []
     var tempResponse: String = ""
@@ -42,7 +44,7 @@ final class MessageViewModel {
         }
     }
     
-    func generate(_ ollamaKit: OllamaKit, activeChat: Chat, prompt: String) {
+    func generate(activeChat: Chat, prompt: String) {
         let message = Message(prompt: prompt)
         message.chat = activeChat
         messages.append(message)
@@ -55,9 +57,9 @@ final class MessageViewModel {
             defer { self.loading = nil }
             
             do {
-                let data = message.toOKChatRequestData(messages: self.messages)
+                let request = message.toChatRequest(messages: self.messages)
                 
-                for try await chunk in ollamaKit.chat(data: data) {
+                for try await chunk in chatBackend.chat(request: request) {
                     if Task.isCancelled { break }
                     
                     tempResponse = tempResponse + (chunk.message?.content ?? "")
@@ -68,7 +70,7 @@ final class MessageViewModel {
                         tempResponse = ""
                         
                         if messages.count == 1 {
-                            self.generateTitle(ollamaKit, activeChat: activeChat)
+                            self.generateTitle(activeChat: activeChat)
                         }
                     }
                 }
@@ -101,7 +103,7 @@ final class MessageViewModel {
         }
     }
     
-    func regenerate(_ ollamaKit: OllamaKit, activeChat: Chat) {
+    func regenerate(activeChat: Chat) {
         guard let lastMessage = messages.last else { return }
         lastMessage.response = nil
         
@@ -112,9 +114,9 @@ final class MessageViewModel {
             defer { self.loading = nil }
             
             do {
-                let data = lastMessage.toOKChatRequestData(messages: self.messages)
+                let request = lastMessage.toChatRequest(messages: self.messages)
                 
-                for try await chunk in ollamaKit.chat(data: data) {
+                for try await chunk in chatBackend.chat(request: request) {
                     if Task.isCancelled { break }
                     
                     tempResponse = tempResponse + (chunk.message?.content ?? "")
@@ -154,19 +156,8 @@ final class MessageViewModel {
         }
     }
     
-    private func generateTitle(_ ollamaKit: OllamaKit, activeChat: Chat) {
-        var requestMessages = [OKChatRequestData.Message]()
-        
-        for message in messages {
-            let userMessage = OKChatRequestData.Message(role: .user, content: message.prompt)
-            let assistantMessage = OKChatRequestData.Message(role: .assistant, content: message.response ?? "")
-            
-            requestMessages.append(userMessage)
-            requestMessages.append(assistantMessage)
-        }
-        
-        let userMessage = OKChatRequestData.Message(role: .user, content: "Just reply with a short title about this conversation. One line maximum. No markdown.")
-        requestMessages.append(userMessage)
+    private func generateTitle(activeChat: Chat) {
+        let request = Message.toTitleChatRequest(messages: self.messages, model: activeChat.model)
         
         generationTask = Task {
             defer { self.loading = nil }
@@ -176,7 +167,7 @@ final class MessageViewModel {
             do {
                 var isReasoningContent = false
                 
-                for try await chunk in ollamaKit.chat(data: OKChatRequestData(model: activeChat.model, messages: requestMessages)) {
+                for try await chunk in chatBackend.chat(request: request) {
                     if Task.isCancelled { break }
                     
                     guard let content = chunk.message?.content else { continue }
