@@ -5,7 +5,8 @@
 **Type**: Existing brownfield project (codebase mapping complete)
 **Status**: Active, version 3.0.3
 **Maintainer**: Kevin Hermawan (kevinhermawan)
-**Repository**: https://github.com/kevinhermawan/Ollamac
+**Repository**: https://github.com/ANierbeck/Ollamac (fork)
+**Original**: https://github.com/kevinhermawan/Ollamac
 
 ## Purpose
 Ollamac provides a native, user-friendly macOS application for interacting with Ollama's local large language models. It aims to offer a seamless chat experience with local AI models, combining the power of Ollama with the polish of a native Mac application.
@@ -22,7 +23,9 @@ Ollamac provides a native, user-friendly macOS application for interacting with 
 - **Lines of Code**: ~4,500+ Swift LOC
 - **Architecture**: MVVM with SwiftUI
 - **Persistence**: SwiftData (SQLite)
-- **Test Coverage**: 0% (no tests)
+- **Test Coverage**: 0% (no tests, no test target)
+- **Plugin Support**: None (to be added in current milestone)
+- **MCP Support**: None (main goal of current milestone)
 
 ## Business Context
 - **Target Audience**: macOS users running Ollama locally
@@ -35,13 +38,14 @@ Ollamac provides a native, user-friendly macOS application for interacting with 
 - Homebrew downloads
 - GitHub stars
 - User satisfaction (issues, discussions)
-- App Store ratings (if distributed there)
 - Community contributions
+- MCP integration success (for current milestone)
 
 ## Stakeholders
 | Role | Name | Responsibility |
 |------|------|----------------|
-| Creator/Maintainer | Kevin Hermawan | Architecture, development, releases |
+| Creator/Maintainer | Kevin Hermawan | Original architecture, development, releases |
+| Fork Maintainer | ANierbeck | MCP integration, architecture adaptation |
 | Users | Community | Feedback, bug reports, feature requests |
 | Contributors | Open Source | Pull requests, issues, discussions |
 
@@ -53,21 +57,36 @@ Ollamac provides a native, user-friendly macOS application for interacting with 
 | Technical | Swift 5.9+ required | Xcode 15+ needed |
 | Legal | Apache License 2.0 | Must comply with terms |
 | Resources | Solo/small team | Development pace |
+| Backward Compatibility | Must maintain | Existing users not broken |
 
 ## Risks
 | Risk | Severity | Mitigation |
 |------|----------|------------|
 | Single maintainer | High | Grow contributor base, documentation |
-| No tests | High | Add test infrastructure, CI pipeline |
-| Tight coupling | Medium | Refactor with DI, protocols |
-| No backup/export | Medium | Add export functionality |
+| No tests | High | Add test infrastructure, CI pipeline (Phase 3) |
+| Tight coupling | High | Refactor with DI, protocols (Phase 1-2) |
+| No plugin system | High | Establish plugin architecture (Phase 4) |
+| MCP spec changes | Medium | Follow MCP specification updates |
 
-## Project Goals (Next 6 Months)
-1. Add MCP (Model Context Protocol) support to extend LLM capabilities
-2. Improve code quality and maintainability
-3. Add comprehensive test coverage
-4. Enhance user experience (performance, features)
-5. Grow contributor community
+## Current Milestone: MCP Architecture Foundation
+**Objective**: Adapt architecture to support MCP, introduce tests, and establish plugin architecture fundamentals.  
+**Duration**: ~6 weeks  
+**Status**: Not started  
+**Phases**: 4 phases (ChatBackend Abstraction, Dependency Injection, Test Infrastructure, Plugin Architecture)  
+**Requirements**: 16 (all P0)  
+
+### Milestone Goals
+1. **Adapt Architecture**: Decouple ChatViewModel and MessageViewModel from direct OllamaKit usage
+2. **Introduce Tests**: Create test infrastructure and first unit tests
+3. **Plugin Architecture**: Establish foundation for MCP as a plugin/extension
+
+### Key Deliverables
+- ChatBackend protocol with OllamaBackend and MCPBackend implementations
+- Dependency injection throughout the chat system
+- Unit test target with first tests
+- CI pipeline for automated testing
+- Plugin protocol and registry
+- MCPBackend as first plugin
 
 ## Non-Goals
 - Windows/Linux support (macOS-only focus)
@@ -75,20 +94,23 @@ Ollamac provides a native, user-friendly macOS application for interacting with 
 - Web version
 - Cloud hosting service
 - Commercial monetization
+- Full MCP specification implementation (only what's needed for Ollamac)
 
 ## Decision Log
 - **v1.0**: Initial release with basic chat functionality
 - **v2.0**: Added model selection, custom hosts
 - **v3.0**: SwiftData migration, improved UI
-- **Future**: Testing, DI, HTTPS, export
+- **MCP Milestone**: Architecture adaptation, test introduction, plugin foundation
 
 ## Links
-- **Repository**: https://github.com/kevinhermawan/Ollamac
+- **Fork Repository**: https://github.com/ANierbeck/Ollamac
+- **Original Repository**: https://github.com/kevinhermawan/Ollamac
 - **Releases**: https://github.com/kevinhermawan/Ollamac/releases
-- **Issues**: https://github.com/kevinhermawan/Ollamac/issues
-- **Homebrew**: `brew install --cask ollamac`
-- **Funding**: https://github.com/kevinhermawan/Ollamac/blob/main/.github/FUNDING.yml
+- **Issues**: https://github.com/ANierbeck/Ollamac/issues
+- **Homebrew**: `brew install --cask ollamac` (points to original)
+- **MCP Specification**: https://modelcontextprotocol.io
 
 ---
-*Generated: $(date)*
-*Source: GSD codebase mapping workflow*
+*Generated: 2024-05-01*
+*Source: GSD new-milestone workflow*
+*Current milestone: MCP Architecture Foundation*

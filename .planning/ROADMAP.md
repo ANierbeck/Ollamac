@@ -1,280 +1,252 @@
-# Roadmap
+# MCP Architecture Milestone - Roadmap
 
 ## Overview
-This roadmap defines the phased approach for adding **MCP (Model Context Protocol) support** to Ollamac. MCP extends LLM capabilities by allowing access to external tools/resources. Ollamac will use **Ollama + MCP** together – MCP enhances the LLM's abilities during chat sessions.
+**Milestone Name**: MCP Architecture Foundation  
+**Objective**: Adapt architecture to support MCP, introduce tests, and establish plugin architecture fundamentals.  
+**Duration**: ~6 weeks  
+**Status**: Not started  
+
+---
 
 ## Current State
 - **Version**: 3.0.3
 - **Status**: Functional Ollama client
-- **Architecture**: MVVM with SwiftUI, SwiftData
-- **Test Coverage**: 0%
-- **MCP Status**: Not supported yet
+- **Architecture**: Tightly coupled MVVM with SwiftUI
+- **Test Coverage**: 0% (no test target, no tests)
+- **Plugin Support**: None
+- **MCP Support**: Not supported
 
 ---
 
 ## Phase Structure
 
-### Phase 0: Foundation (Current - Complete)
-**Duration**: Already complete
-**Goal**: Establish project, codebase mapping
-**Status**: ✅ Complete
+### Phase 1: ChatBackend Abstraction
+**Duration**: 1-2 weeks  
+**Goal**: Create protocol abstraction for chat backends
 
-| Task | Status | Owner | Notes |
-|------|--------|-------|-------|
-| Analyze existing codebase | ✅ Done | GSD | 7 codebase docs created |
-| Document architecture | ✅ Done | GSD | ARCHITECTURE.md, STRUCTURE.md |
-| Identify technical debt | ✅ Done | GSD | CONCERNS.md created |
-| Define requirements | ✅ Done | GSD | REQUIREMENTS.md created |
+| Task | ID | Effort | Priority | Dependencies | Status |
+|------|-----|--------|----------|--------------|--------|
+| Create ChatBackend protocol | A-001 | Medium | P0 | None | ⬜ |
+| Implement OllamaBackend (refactor existing) | A-001 | Medium | P0 | A-001 | ⬜ |
+| Create MCPBackend skeleton | A-005 | Medium | P0 | A-001 | ⬜ |
+
+**Acceptance Criteria**:
+- [ ] ChatBackend protocol defined with all required methods
+- [ ] OllamaBackend implements ChatBackend
+- [ ] MCPBackend skeleton implements ChatBackend
+- [ ] Protocol documented with clear contract
+
+**Outcome**: Foundation for multi-backend support established
 
 ---
 
-## Milestone 1: Architecture for MCP Support
-**Duration**: 2-3 weeks
-**Goal**: Enable MCP integration by decoupling architecture
-**Success**: Ollamac can integrate MCP servers alongside Ollama
+### Phase 2: Dependency Injection
+**Duration**: 1-2 weeks  
+**Goal**: Inject dependencies instead of direct instantiation
 
-### Phase 1.1: Dependency Injection & Network Abstraction
-**Outcome**: Decoupled architecture enabling MCP integration
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Create OllamaKit protocol abstraction | R-001 | Medium | P0 | None |
-| Create MCP client protocol/interface | NEW | Medium | P0 | R-001 |
-| Implement dependency injection in ChatView | R-001 | Medium | P0 | R-001 |
-| Implement dependency injection in MessageViewModel | R-001 | Medium | P0 | R-001 |
-| Extract business logic from views | R-003 | Medium | P0 | R-001 |
+| Task | ID | Effort | Priority | Dependencies | Status |
+|------|-----|--------|----------|--------------|--------|
+| Implement DI in ChatView | A-002 | Medium | P0 | Phase 1 | ⬜ |
+| Implement DI in MessageViewModel | A-003 | Medium | P0 | Phase 1 | ⬜ |
+| Extract business logic from views | A-004 | Medium | P0 | A-002, A-003 | ⬜ |
+| Update ChatView to use injected backend | A-002 | Small | P0 | A-002 | ⬜ |
+| Update MessageViewModel to use injected backend | A-003 | Small | P0 | A-003 | ⬜ |
 
 **Acceptance Criteria**:
-- [ ] OllamaKit can be mocked for testing
-- [ ] MCP client interface defined
-- [ ] ViewModels accept dependencies via constructor
+- [ ] ChatView accepts ChatBackend via environment/constructor
+- [ ] MessageViewModel accepts ChatBackend via environment/constructor
 - [ ] No direct OllamaKit instantiation in views
+- [ ] Business logic separated from UI concerns
 
-### Phase 1.2: Test Infrastructure for MCP
-**Outcome**: Foundation for testing MCP integration
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Add unit test target to Xcode project | R-010 | Small | P0 | None |
-| Create MockOllamaKit implementation | R-011 | Medium | P0 | R-001 |
-| Create MockMCPClient implementation | NEW | Medium | P0 | R-001 |
-| Add first unit tests for MessageViewModel | R-012 | Medium | P0 | R-010, R-011 |
-| Setup GitHub Actions CI pipeline | R-016 | Medium | P0 | R-010 |
-
-**Acceptance Criteria**:
-- [ ] Test target compiles and runs
-- [ ] MockOllamaKit can simulate all API responses
-- [ ] MockMCPClient can simulate tool calls
-- [ ] CI runs tests on every PR
-
-### Phase 1.3: MCP Client Implementation
-**Outcome**: Basic MCP client functionality
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Implement MCP client module | NEW | Medium | P0 | 1.1 |
-| Add MCP server connection management | NEW | Medium | P0 | 1.1 |
-| Implement MCP tool listing | NEW | Small | P0 | 1.3 |
-| Implement MCP tool execution | NEW | Medium | P0 | 1.3 |
-
-**Acceptance Criteria**:
-- [ ] MCP client can connect to MCP servers
-- [ ] MCP client can list available tools
-- [ ] MCP client can execute tools and return results
-- [ ] MCP errors handled gracefully
+**Outcome**: Architecture is decoupled and ready for MCP integration
 
 ---
 
-## Milestone 2: MCP Integration in Chat
-**Duration**: 2 weeks
-**Goal**: Full MCP integration in chat flow
-**Success**: Users can use MCP tools during Ollama chats
+### Phase 3: Test Infrastructure
+**Duration**: 1-2 weeks  
+**Goal**: Establish foundation for automated testing
 
-### Phase 2.1: MCP Tool Integration
-**Outcome**: MCP tools available during chat
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Integrate MCP client with MessageViewModel | NEW | Medium | P0 | M1 |
-| Add MCP tool discovery to chat context | NEW | Medium | P0 | 2.1 |
-| Display available MCP tools in UI | NEW | Medium | P0 | 2.1 |
-| Handle MCP tool calls from LLM | NEW | Medium | P0 | 2.1 |
+| Task | ID | Effort | Priority | Dependencies | Status |
+|------|-----|--------|----------|--------------|--------|
+| Add unit test target to Xcode project | T-001 | Small | P0 | None | ⬜ |
+| Create Mock ChatBackend | T-002 | Medium | P0 | Phase 1 | ⬜ |
+| Add ChatViewModel unit tests | T-004 | Medium | P0 | T-001, T-002 | ⬜ |
+| Add MessageViewModel unit tests | T-005 | Medium | P0 | T-001, T-002 | ⬜ |
+| Setup GitHub Actions CI pipeline | T-006 | Medium | P0 | T-001 | ⬜ |
 
 **Acceptance Criteria**:
-- [ ] MCP tools discovered and available in chat
-- [ ] LLM can request MCP tool usage
-- [ ] Tool results displayed in chat
-- [ ] Multiple MCP servers can be configured
+- [ ] Unit test target compiles and runs successfully
+- [ ] Mock ChatBackend can simulate all operations
+- [ ] ViewModel tests pass with mock backend
+- [ ] CI pipeline runs tests on every push/PR
 
-### Phase 2.2: Streaming with MCP
-**Outcome**: Seamless MCP integration in streaming responses
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Integrate MCP tool calls in streaming | NEW | Medium | P0 | 2.1 |
-| Handle MCP tool responses in chat flow | NEW | Medium | P0 | 2.2 |
-| Add MCP error handling in chat | NEW | Small | P0 | 2.2 |
-| Optimize MCP tool call performance | NEW | Small | P1 | 2.2 |
-
-**Acceptance Criteria**:
-- [ ] MCP tool calls don't block streaming
-- [ ] Tool results inserted at correct position in response
-- [ ] MCP errors shown to user without breaking chat
-- [ ] Tool calls are performant
-
-### Phase 2.3: MCP Server Management
-**Outcome**: User can configure and manage MCP servers
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Add MCP server configuration UI | NEW | Medium | P0 | 2.1 |
-| Add MCP server connection testing | NEW | Small | P0 | 2.3 |
-| Add MCP server enable/disable | NEW | Small | P0 | 2.3 |
-| Persist MCP server configurations | NEW | Small | P0 | 2.3 |
-
-**Acceptance Criteria**:
-- [ ] Users can add/remove MCP servers
-- [ ] Users can test MCP server connections
-- [ ] MCP server configs persisted
-- [ ] MCP servers can be enabled/disabled
+**Outcome**: Test foundation established, CI pipeline active
 
 ---
 
-## Milestone 3: Testing & Polish
-**Duration**: 1-2 weeks
-**Goal**: Comprehensive testing and quality improvements
-**Success**: MCP integration fully tested and production-ready
+### Phase 4: Plugin Architecture Foundation
+**Duration**: 1-2 weeks  
+**Goal**: Establish plugin system for extensible backends
 
-### Phase 3.1: MCP Integration Testing
-**Outcome**: Full test coverage for MCP features
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Add unit tests for MCP client | NEW | Medium | P0 | M1, M2 |
-| Add integration tests for MCP + Ollama | NEW | Medium | P0 | M2 |
-| Add UI tests for MCP features | NEW | Medium | P1 | M2 |
-| Add code coverage reporting | R-017 | Small | P1 | M1 |
+| Task | ID | Effort | Priority | Dependencies | Status |
+|------|-----|--------|----------|--------------|--------|
+| Define Plugin Protocol | P-001 | Small | P0 | Phase 1 | ⬜ |
+| Create Plugin Registry | P-002 | Medium | P0 | P-001 | ⬜ |
+| Implement Plugin Discovery | P-003 | Small | P0 | P-002 | ⬜ |
+| Add Plugin Configuration UI | P-004 | Medium | P0 | P-002 | ⬜ |
+| Implement MCPBackend as plugin | P-005 | Medium | P0 | P-001, Phase 1 | ⬜ |
 
 **Acceptance Criteria**:
-- [ ] MCP client has 80%+ test coverage
-- [ ] MCP integration tests pass
-- [ ] UI tests cover critical MCP flows
-- [ ] Code coverage visible in CI
+- [ ] Plugin protocol defined and documented
+- [ ] Plugin registry can register/unregister plugins
+- [ ] Plugins discovered at application startup
+- [ ] Users can enable/disable plugins in UI
+- [ ] MCPBackend works as first plugin
 
-### Phase 3.2: Code Quality & Documentation
-**Outcome**: Production-ready MCP implementation
-
-| Task | ID | Effort | Priority | Dependencies |
-|------|-----|--------|----------|--------------|
-| Extract common streaming logic | R-040 | Small | P1 | None |
-| Unify think tag handling | R-041 | Small | P1 | None |
-| Centralize configuration | R-042 | Small | P1 | None |
-| Add MCP documentation | NEW | Medium | P0 | M2 |
-| Add SwiftLint for style enforcement | R-044 | Small | P1 | None |
-
-**Acceptance Criteria**:
-- [ ] No duplicate streaming code
-- [ ] Consistent think tag handling
-- [ ] All configuration in one place
-- [ ] MCP usage documented
-- [ ] Linting passes on CI
+**Outcome**: Plugin architecture foundation established, MCP integrated
 
 ---
 
 ## Phase Summary
 
-| Milestone | Phases | Duration | Primary Focus | Success Metric |
-|-----------|--------|----------|----------------|----------------|
-| M1 | 1.1-1.3 | 2-3 weeks | Architecture & MCP Client | MCP client functional, testable |
-| M2 | 2.1-2.3 | 2 weeks | MCP Chat Integration | MCP tools usable in chat |
-| M3 | 3.1-3.2 | 1-2 weeks | Testing & Quality | MCP fully tested, production-ready |
+| Phase | Duration | Goal | Key Deliverables |
+|-------|----------|------|-------------------|
+| 1 | 1-2 weeks | ChatBackend Abstraction | Protocol + OllamaBackend + MCPBackend skeleton |
+| 2 | 1-2 weeks | Dependency Injection | DI in ChatView + MessageViewModel |
+| 3 | 1-2 weeks | Test Infrastructure | Test target + mocks + CI |
+| 4 | 1-2 weeks | Plugin Architecture | Plugin system + MCPBackend |
+
+**Total**: 4 phases, ~6 weeks, 16 requirements
 
 ---
 
-## Total Estimates
-- **Total Phases**: 8 phases across 3 milestones
-- **Total Duration**: 5-7 weeks
-- **Total Effort**: ~35-45 person-days
+## Milestone Success Criteria
 
----
-
-## Release Plan
-
-| Version | Milestone | Date | Notes |
-|---------|-----------|------|-------|
-| 3.0.3 | Current | Released | Baseline |
-| 3.1.0 | M1 Complete | TBD | MCP client + architecture |
-| 3.2.0 | M2 Complete | TBD | MCP chat integration |
-| 3.3.0 | M3 Complete | TBD | MCP production-ready |
+- [ ] ChatBackend protocol defined and implemented
+- [ ] Dependency injection working throughout
+- [ ] Unit test target exists and tests pass
+- [ ] CI pipeline active and running tests
+- [ ] Plugin architecture foundation established
+- [ ] MCPBackend integrated as first plugin
+- [ ] Architecture documented
+- [ ] No direct OllamaKit instantiation in views
 
 ---
 
 ## Dependencies
 
-### External Dependencies
-- MCP specification (modelcontextprotocol.io)
-- Ollama server (for integration testing)
-- Xcode 15+ (Swift 5.9+)
-- macOS 14.0+ (for builds)
-- GitHub (for CI/CD)
+### Phase Dependencies
+```
+Phase 1 (ChatBackend Abstraction)
+    ↓
+Phase 2 (Dependency Injection) → depends on Phase 1
+    ↓
+Phase 3 (Test Infrastructure) → depends on Phase 1, 2
+    ↓
+Phase 4 (Plugin Architecture) → depends on Phase 1, 2
+```
 
-### Internal Dependencies
-- M1 must be complete before M2 can start (architecture first)
-- M2 must be complete before M3 can start (integration before testing)
-- Testing infrastructure required for all MCP development
+**Note**: Phase 3 (Tests) and Phase 4 (Plugin) can run in parallel after Phase 2
+
+### External Dependencies
+- Xcode 15+ (Swift 5.9+)
+- macOS 14.0+ (for building)
+- GitHub (for CI/CD)
+- Ollama server (for integration testing)
 
 ---
 
 ## Key Design Decisions
 
-### MCP Architecture in Ollamac
-```
-ChatView
-   └── MessageViewModel
-        ├── OllamaKit (existing) -- for LLM chat
-        └── MCPClient (new) -- for tool/resources
-             └── MCPServerConnection -- manages server connections
-                  └── MCPToolExecutor -- executes tools
-```
-
-### MCP + Ollama Integration Flow
-```
-User sends message
-   ↓
-MessageViewModel processes
-   ↓
-OllamaKit streams LLM response
-   ↓
-IF LLM requests MCP tool:
-   ├─ MCPClient lists available tools
-   ├─ MCPClient executes requested tool
-   └─ Tool result inserted into stream
-   ↓
-Response with tool results displayed
+### ChatBackend Protocol
+```swift
+protocol ChatBackend: Sendable {
+    // Chat operations
+    func sendMessage(prompt: String, chat: Chat, options: ChatOptions) async throws -> AsyncThrowingStream<ChatChunk, Error>
+    
+    // Model operations
+    func listModels() async throws -> [Model]
+    func getModelInfo(model: String) async throws -> ModelInfo
+    
+    // Connection
+    func checkConnection() async throws -> Bool
+    
+    // Server info
+    var baseURL: URL { get }
+    var serverType: String { get }  // "Ollama", "MCP", etc.
+}
 ```
 
-### MCP Server Configuration
-- Multiple MCP servers can be configured
-- Each server provides its own set of tools
-- Users can enable/disable servers per chat
-- Server connection tested before use
+### Plugin Protocol
+```swift
+protocol ChatPlugin: ChatBackend {
+    // Plugin metadata
+    static var pluginID: String { get }
+    static var displayName: String { get }
+    static var description: String { get }
+    
+    // Plugin lifecycle
+    static func createInstance(config: PluginConfig) -> Self
+}
+```
+
+### Architecture Diagram
+```
+┌─────────────────────────────────────────────────────┐
+│                    Views (SwiftUI)                   │
+│  ChatView ┬───────────────────────────────────────┐ │
+│           │                                       │ │
+│           ▼                                       ▼ │
+│  ┌─────────────────┐             ┌─────────────┐ │
+│  │ ChatViewModel   │◄────────────│  ChatBackend │ │
+│  │                 │             │  (Protocol) │ │
+│  │  @Environment   │             └──────┬──────┘ │
+│  └────────┬────────┤                        │       │
+│           │        │                        │       │
+│           ▼        ▼                        ▼       │
+│  ┌─────────────────┐         ┌─────────────────┐  │
+│  │ MessageViewModel│         │ PluginRegistry  │  │
+│  │                 │         │                 │  │
+│  │  @Environment   │         └─────────────────┘  │
+│  └─────────────────┘                   │          │
+│                                      │          │
+│          ┌───────────────────────────┴─────────┐ │
+│          │                 Plugin Backends        │ │
+│          ▼                                           │ │
+│  ┌─────────────────┐    ┌─────────────────┐       │ │
+│  │ OllamaBackend   │    │ MCPBackend       │       │ │
+│  │ (refactored)    │    │ (new plugin)    │       │ │
+│  └─────────────────┘    └─────────────────┘       │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## Release Plan
+
+| Version | Phase | Date | Notes |
+|---------|-------|------|-------|
+| 3.0.3 | Current | Released | Baseline |
+| 3.1.0 | Phase 1-2 | TBD | Architecture + DI |
+| 3.2.0 | Phase 3 | TBD | Testing |
+| 3.3.0 | Phase 4 | TBD | Plugin Architecture + MCP |
 
 ---
 
 ## Tracking
 - **Project Board**: GitHub Projects (recommended)
-- **Issues**: GitHub Issues with labels
-- **PRs**: GitHub Pull Requests with templates
-- **Progress**: Manual tracking in STATE.md
+- **Issues**: GitHub Issues with milestone label
+- **PRs**: GitHub Pull Requests with milestone tracking
+- **Progress**: Track in STATE.md
 
 ---
 
 ## Next Steps
-1. Review and approve this updated roadmap
-2. Run `/gsd-plan-phase 1.1` to start Phase 1.1 (Dependency Injection & Network Abstraction)
+1. Review and approve this roadmap
+2. Run `/gsd-plan-phase 1` to start Phase 1 (ChatBackend Abstraction)
 3. Or run `/gsd-plan-milestone-gaps` to identify additional gaps
 
 ---
-*Roadmap updated for MCP integration*
-*Ollama + MCP (not Ollama OR MCP) - MCP extends LLM capabilities*
-*E-Mail specific features removed (user has existing MCP integration)*
+*Roadmap for MCP Architecture Milestone*
+*Single milestone with 4 phases, ~6 weeks total*
+*Focus: Architecture adaptation, test introduction, plugin foundation*

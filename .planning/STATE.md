@@ -3,8 +3,8 @@
 ## Current Context
 - **Project**: Ollamac
 - **Location**: /Users/anierbeck/git/Ollamac
-- **Branch**: main
-- **Commit**: 5ebbddc (chore: map codebase for GSD planning)
+- **Branch**: mcp-support
+- **Commit**: 99b1a24 (chore: update PROJECT.md for MCP focus)
 - **User**: anierbeck
 - **Workflows**: GSD (Getting Stuff Done)
 
@@ -19,71 +19,79 @@
 4. **Codebase**: 36 Swift files, MVVM architecture, SwiftUI
 5. **Dependencies**: 10 external frameworks (Sparkle, OllamaKit, ChatField, etc.)
 6. **Test Coverage**: 0% (no test target, no tests)
-7. **Technical Debt**: High (tight coupling, no DI, no tests, security concerns)
+7. **Technical Debt**: High (tight coupling, no DI, no tests)
+
+### Current Milestone
+- **Name**: MCP Architecture Foundation
+- **Objective**: Adapt architecture to support MCP, introduce tests, establish plugin architecture
+- **Duration**: ~6 weeks
+- **Status**: Not started
+- **Phases**: 4 phases (ChatBackend Abstraction, DI, Test Infrastructure, Plugin Architecture)
+- **Total Requirements**: 16 (all P0)
 
 ### Recent Actions
 - [2024-05-01] Codebase mapping completed (gsd-map-codebase)
   - Created .planning/codebase/ with 7 documents
-  - ARCHITECTURE.md, CONCERNS.md, CONVENTIONS.md, INTEGRATIONS.md, STACK.md, STRUCTURE.md, TESTING.md
-- [2024-05-01] New project workflow initiated (gsd-new-project)
-  - Created PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md, config.json
+- [2024-05-01] GSD project initialized (gsd-new-project)
+  - Created initial PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md, config.json
+- [2024-05-01] Requirements and roadmap updated for MCP
+  - Focus on architecture adaptation, test introduction, plugin foundation
+- [2024-05-01] MCP milestone defined (gsd-new-milestone)
+  - Single milestone: MCP Architecture Foundation
+  - 4 phases, 16 requirements, ~6 weeks
 
 ### Current Workflow State
-- **Phase**: Pre-execution (planning complete)
-- **Milestone**: None active (M1: Architecture & Testing Foundation is next)
-- **Next Step**: `/gsd-plan-phase 1.1` or `/gsd-plan-milestone-gaps`
+- **Phase**: Pre-execution (milestone defined)
+- **Milestone**: MCP Architecture Foundation (active)
+- **Next Step**: `/gsd-plan-phase 1` to start Phase 1 (ChatBackend Abstraction)
 
 ---
 
 ## Environment
 
 ### Development Environment
-- **OS**: macOS (assumed 14.0+)
+- **OS**: macOS 14.0+ (Sonoma)
 - **Xcode**: 15.0+ (required for Swift 5.9)
 - **Swift**: 5.9+
-- **Tools**: Git, GitHub CLI (assumed)
+- **Tools**: Git, GitHub CLI
 
 ### Project Configuration
 - **Project File**: Ollamac.xcodeproj
 - **Scheme**: Ollamac
 - **Target**: Ollamac (macOS)
 - **Build**: Debug & Release
-- **Test Target**: None (needs to be created)
+- **Test Target**: None (needs to be created in Phase 3)
 
 ---
 
-## Open Questions
+## Milestone: MCP Architecture Foundation
 
-### To Be Resolved
-1. **Who will work on this project?**
-   - Is this for personal use (anierbeck) or community contribution?
-   - Solo development or team collaboration?
+### Overview
+This milestone establishes the foundation for MCP (Model Context Protocol) support in Ollamac by:
+1. Adapting the architecture to support multiple chat backends
+2. Introducing a comprehensive test infrastructure
+3. Establishing a plugin architecture for extensible functionality
 
-2. **What is the timeline?**
-   - Immediate start or planned for future?
-   - Full-time or part-time effort?
+### Goals
+| # | Goal | Status | Owner |
+|---|------|--------|-------|
+| 1 | Adapt architecture to support MCP | Not started | TBD |
+| 2 | Introduce tests and CI pipeline | Not started | TBD |
+| 3 | Establish plugin architecture foundation | Not started | TBD |
 
-3. **What is the scope?**
-   - Full M1-M5 roadmap or subset?
-   - Focus on specific area (e.g., just testing)?
+### Key Requirements
+- **16 total requirements** (all P0)
+- **4 phases** across ~6 weeks
+- **Epic 1 (Architecture)**: 5 requirements, ~2.5 weeks
+- **Epic 2 (Testing)**: 6 requirements, ~1.5 weeks
+- **Epic 3 (Plugin)**: 5 requirements, ~2 weeks
 
-4. **Resource constraints?**
-   - Access to macOS 14.0+ machine?
-   - Ollama server available for testing?
-   - GitHub repository write access?
-
-5. **Quality expectations?**
-   - Professional code quality?
-   - Open-source contribution standards?
-   - Personal project standards?
-
-### Assumptions (Until Clarified)
-1. User is anierbeck (local developer)
-2. Working on personal machine with macOS 14.0+
-3. Has Xcode 15+ installed
-4. Has Ollama installed locally
-5. Goal is to improve the existing project
-6. Willing to contribute back to open-source
+### Blockers
+| Blocker | Impact | Resolution |
+|---------|--------|------------|
+| Tight coupling between views and OllamaKit | Blocks DI and plugin architecture | Complete Phase 1 and 2 |
+| No test infrastructure | Blocks verification of changes | Complete Phase 3 |
+| No plugin system | Blocks MCP integration | Complete Phase 4 |
 
 ---
 
@@ -92,8 +100,8 @@
 | Date | Decision | Context | Outcome |
 |------|----------|---------|--------|
 | 2024-05-01 | Use GSD workflow | User requested codebase analysis | GSD skills applied |
-| 2024-05-01 | Create full codebase map | User said "analyse the project" | 7 codebase docs created |
-| 2024-05-01 | Initialize GSD project | User said "führe den skill gsd-new-project aus" | PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md created |
+| 2024-05-01 | Focus on MCP integration | User clarified MCP as the goal | MCP Architecture Milestone defined |
+| 2024-05-01 | Single milestone approach | User confirmed sequential milestone approach | One milestone with 4 phases |
 
 ---
 
@@ -102,26 +110,22 @@
 ### Current Session
 - **Started**: 2024-05-01
 - **User**: anierbeck
-- **Conference**: Ollamac project analysis and GSD initialization
+- **Focus**: MCP Architecture Milestone definition
 
-### Session Artifacts
-1. .planning/codebase/ - 7 codebase analysis documents
-2. .planning/PROJECT.md - Project context
-3. .planning/REQUIREMENTS.md - Scoped requirements
-4. .planning/ROADMAP.md - Phase structure
-5. .planning/STATE.md - Project memory (this file)
-6. .planning/config.json - GSD workflow configuration
-
-### Session Commands Executed
+### Session Commands
 ```
 # User commands
 analyse the project
 gsd-map-codebase (implicit)
 jetzt führe den skill gsd-new-project aus
 
-# System actions
-gsd-map-codebase executed (created 7 codebase docs)
-gsd-new-project executed (created 5 planning docs)
+# Then manual adjustments for MCP
+git remote change to ANierbeck/Ollamac.git
+create branch mcp-support
+push to fork
+
+# Then skill execution
+gsd-new-milestone (for MCP Architecture Milestone)
 ```
 
 ---
@@ -129,26 +133,20 @@ gsd-new-project executed (created 5 planning docs)
 ## Next Actions
 
 ### Immediate (Ready to Execute)
-1. **/gsd-plan-phase 1.1** - Plan Phase 1.1 (Dependency Injection & Architecture)
-2. **/gsd-plan-milestone-gaps** - Review M1 requirements and identify gaps
-3. **/gsd-new-milestone** - Restart with different scope if needed
+1. **`/gsd-plan-phase 1`** - Plan Phase 1 (ChatBackend Abstraction)
 
-### Pending User Input
-- Clarify project scope and priorities
-- Confirm resource availability
-- Define timeline expectations
-- Identify primary focus area
+### Alternative
+1. **`/gsd-plan-milestone-gaps`** - Review milestone and identify gaps
+2. **Manual phase planning** - Create PLAN.md for Phase 1 manually
 
 ### Recommended Next Step
-Run `/gsd-plan-phase 1.1` to start executing the first phase of the roadmap.
-
-Alternatively, if you want to review and adjust the roadmap first, run `/gsd-progress` to check current state.
+Run `/gsd-plan-phase 1` to start planning Phase 1: ChatBackend Abstraction
 
 ---
 
 ## Project Metrics
 
-### Codebase Metrics (as of analysis)
+### Codebase Metrics
 - **Total Files**: 40
 - **Swift Files**: 36
 - **Lines of Code**: ~4,500+
@@ -157,19 +155,25 @@ Alternatively, if you want to review and adjust the roadmap first, run `/gsd-pro
 - **Technical Debt**: High
 
 ### Documentation Metrics
-- **Codebase Docs**: 7 files, 1,984 lines
-- **Planning Docs**: 5 files, ~1,500+ lines
+- **Codebase Docs**: 7 files, ~1,984 lines (.planning/codebase/)
+- **Planning Docs**: 5 files, ~1,500+ lines (.planning/)
 - **Total Docs**: 12 files, ~3,500+ lines
+
+### Milestone Metrics
+- **Requirements**: 16 (all P0)
+- **Phases**: 4
+- **Duration**: ~6 weeks
+- **Effort**: ~40-50 person-days
 
 ---
 
 ## Notes
 - This is a brownfield project with existing code and users
-- Changes should maintain backward compatibility
-- Focus on incremental improvements rather than rewrites
-- Security and testing are critical priorities
-- Architecture improvements will enable future development
+- MCP integration requires architectural changes first
+- Focus on sequential milestone execution
+- Single milestone (MCP Architecture Foundation) before moving to next
+- Architecture changes must maintain backward compatibility
 
 ---
 *Last updated: 2024-05-01*
-*State file for GSD workflow tracking*
+*State file reset for MCP Architecture Milestone*
