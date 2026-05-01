@@ -16,6 +16,14 @@ struct ChatView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(CodeHighlighter.self) private var codeHighlighter
 
+    @StateObject private var chatService: ChatService
+
+    init() {
+        let baseURL = URL(string: Defaults[.defaultHost])!
+        let initialBackend = OllamaBackend(baseURL: baseURL)
+        self._chatService = StateObject(wrappedValue: ChatService(chatBackend: initialBackend))
+    }
+
     @AppStorage("experimentalCodeHighlighting") private var experimentalCodeHighlighting = false
     @Default(.fontSize) private var fontSize
 
@@ -95,6 +103,7 @@ struct ChatView: View {
             }
             .onAppear {
                 self.scrollProxy = proxy
+                chatService.setViewModels(chatViewModel: chatViewModel, messageViewModel: messageViewModel)
             }
             .onChange(of: chatViewModel.activeChat?.id, initial: true) {
                 self.onActiveChatChanged()
@@ -127,17 +136,9 @@ struct ChatView: View {
             ChatPreferencesView()
                 .inspectorColumnWidth(min: 320, ideal: 320)
         }
-        .environment(\.chatBackend, createChatBackend())
+        .environment(\.chatBackend, chatService.chatBackend)
     }
     
-    private func createChatBackend() -> any ChatBackend {
-        if let activeChat = chatViewModel.activeChat, let host = activeChat.host, let baseURL = URL(string: host) {
-            return OllamaBackend(baseURL: baseURL)
-        }
-        let baseURL = URL(string: Defaults[.defaultHost])!
-        return OllamaBackend(baseURL: baseURL)
-    }
-
     private func onActiveChatChanged() {
         self.prompt = ""
         if chatViewModel.shouldFocusPrompt {
@@ -151,6 +152,8 @@ struct ChatView: View {
         }
 
         if let activeChat = chatViewModel.activeChat, let host = activeChat.host, let baseURL = URL(string: host) {
+            let newBackend = OllamaBackend(baseURL: baseURL)
+            chatService.updateChatBackend(newBackend)
             chatViewModel.fetchModels()
         }
     }
@@ -164,7 +167,7 @@ struct ChatView: View {
         guard let activeChat = chatViewModel.activeChat, !activeChat.model.isEmpty, chatViewModel.isHostReachable else { return }
 
         if messageViewModel.loading == .generate {
-            messageViewModel.cancelGeneration()
+            chatService.cancelGeneration()
         } else {
             let prompt = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !prompt.isEmpty else {
@@ -174,7 +177,7 @@ struct ChatView: View {
 
             guard let activeChat = chatViewModel.activeChat else { return }
             
-            messageViewModel.generate(activeChat: activeChat, prompt: prompt)
+            chatService.generate(activeChat: activeChat, prompt: prompt)
         }
         
         self.prompt = ""
@@ -184,11 +187,11 @@ struct ChatView: View {
         guard let activeChat = chatViewModel.activeChat, !activeChat.model.isEmpty, chatViewModel.isHostReachable else { return }
         
         if messageViewModel.loading == .generate {
-            messageViewModel.cancelGeneration()
+            chatService.cancelGeneration()
         } else {
             guard let activeChat = chatViewModel.activeChat else { return }
             
-            messageViewModel.regenerate(activeChat: activeChat)
+            chatService.regenerate(activeChat: activeChat)
         }
         
         prompt = ""

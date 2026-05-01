@@ -262,7 +262,157 @@ OllamacApp
 
 ## Anti-Patterns to Note
 - ViewModels passed via environment (SwiftUI convention, but can be hard to test)
-- Direct OllamaKit instantiation in ChatView
-- No dependency injection for OllamaKit (hard to mock for testing)
-- Business logic mixed with UI in some places
+- Business logic mixed with UI in some places (being addressed in Phase 2)
 - No clear separation between domain and API models
+
+---
+
+## Phase 1 & 2 Architecture Updates
+
+### New ChatBackend Protocol Layer
+
+**Added in Phase 1**: Protocol abstraction for all chat backends.
+
+```swift
+protocol ChatBackend: Sendable {
+    var baseURL: URL { get }
+    var backendType: String { get }
+    func reachable() async -> Bool
+    func listModels() async throws -> [String]
+    func chat(request: ChatRequest) async throws -> AsyncThrowingStream<ChatResponseChunk, Error>
+}
+```
+
+**Implementations**:
+- `OllamaBackend`: Wraps existing OllamaKit functionality
+- `MCPBackend`: MCP server integration (Phase 1 skeleton)
+
+### Dependency Injection Pattern
+
+**Added in Phase 1**: SwiftUI Environment-based DI.
+
+```
+// Environment Key
+private struct ChatBackendEnvironmentKey: EnvironmentKey {
+    static let defaultValue: any ChatBackend = OllamaBackend(baseURL: Defaults[.defaultHost])
+}
+
+extension EnvironmentValues {
+    var chatBackend: any ChatBackend {
+        get { self[ChatBackendEnvironmentKey.self] }
+        set { self[ChatBackendEnvironmentKey.self] = newValue }
+    }
+}
+
+// Usage in ViewModels
+@Environment(ChatBackend.self) private var chatBackend
+
+// Injection in Views
+.environment(\.chatBackend, backend)
+```
+
+**Benefits**:
+- No direct OllamaKit instantiation in views
+- Easy to swap backends for testing
+- Supports multiple backend types (Ollama, MCP, etc.)
+- Type-safe protocol interface
+
+### Service Layer (Phase 2)
+
+**Added in Phase 2**: ChatService for business logic extraction.
+
+```swift
+@MainActor
+final class ChatService: ObservableObject {
+    private(set) var chatBackend: any ChatBackend
+    private var messageViewModel: MessageViewModel?
+    private var chatViewModel: ChatViewModel?
+    
+    func setViewModels(chatViewModel: ChatViewModel, messageViewModel: MessageViewModel)
+    func updateChatBackend(_ chatBackend: any ChatBackend)
+    func generate(activeChat: Chat, prompt: String)
+    func regenerate(activeChat: Chat)
+    func cancelGeneration()
+}
+```
+
+**Responsibilities**:
+- Manages ChatBackend instance lifecycle
+- Coordinates between ChatViewModel and MessageViewModel
+- Handles message generation actions
+- Maintains active chat state
+
+### Updated Data Flow (Phase 1-2)
+
+**User Sends Message**:
+```
+1. User types in ChatField
+2. generateAction() called in ChatView
+3. ChatView delegates to chatService.generate()
+4. ChatService calls messageViewModel.generate()
+5. MessageViewModel uses @Environment(ChatBackend.self)
+6. ChatBackend.chat() streams response via OllamaBackend or MCPBackend
+7. Chunks processed and accumulated
+8. On completion: Message.response set, Chat.modifiedAt updated
+9. SwiftData auto-persists
+10. UI updates via @Observable
+```
+
+**Backend Switching**:
+```
+1. User changes active chat with different host
+2. ChatView.onActiveChatChanged() triggered
+3. ChatService.updateChatBackend() creates new OllamaBackend
+4. ChatView updates .environment(\.chatBackend, newBackend)
+5. All ViewModels automatically receive new backend via environment
+6. fetchModels() called with new backend
+```
+
+### New Module: ChatBackend
+
+**Location**: `Ollamac/ChatBackend/`
+
+**Files**:
+- `ChatBackend.swift`: Protocol + supporting types (ChatRole, ChatMessage, ChatOptions, ChatRequest, ChatResponseChunk)
+- `ChatBackendEnvironment.swift`: Environment key for DI
+- `OllamaBackend.swift`: OllamaKit adapter
+- `MCPBackend.swift`: MCP server backend (skeleton)
+- `Clients/MCPClient.swift`: MCP client protocol + types
+- `Clients/HTTPMCPClient.swift`: HTTP-based MCP client implementation
+
+### New Module: Services
+
+**Location**: `Ollamac/Services/`
+
+**Files**:
+- `ChatService.swift`: Chat coordination service
+
+### Updated Component Responsibilities
+
+| Concern | Layer | Responsibility |
+|---------|-------|----------------|
+| UI Rendering | Views | Display data, handle user input |
+| UI Coordination | Services | Coordinate between ViewModels, manage backend |
+| State | ViewModels | Manage mutable state |
+| Business Logic | ViewModels + Services | Process user actions |
+| Backend Abstraction | ChatBackend | Protocol + implementations |
+| Data | Models | Define data structure |
+| Persistence | Models + SwiftData | Store/retrieve data |
+| API Integration | Backend Implementations | Network communication |
+| Configuration | Defaults | User preferences |
+| Auto-update | Sparkle | Update management |
+
+### New Design Patterns
+
+8. **Protocol-Oriented Design**: ChatBackend protocol for backend abstraction
+9. **Dependency Injection**: Environment-based DI for backends
+10. **Adapter Pattern**: OllamaBackend adapts OllamaKit to ChatBackend
+11. **Service Layer**: ChatService for business logic extraction
+12. **Plugin Architecture Foundation**: MCPBackend as first plugin
+
+### Resolved Anti-Patterns
+✅ Direct OllamaKit instantiation in ChatView - RESOLVED (via ChatBackend DI)  
+✅ No dependency injection for OllamaKit - RESOLVED (via Environment)  
+⚠️ Business logic mixed with UI - PARTIALLY RESOLVED (ChatService extracted)  
+⚠️ ViewModels passed via environment - STILL EXISTS (SwiftUI convention)  
+⚠️ No clear separation between domain and API models - PARTIALLY RESOLVED (ChatRequest types)
