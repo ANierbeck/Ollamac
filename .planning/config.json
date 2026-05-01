@@ -1,0 +1,57 @@
+{
+  "projectName": "Ollamac",
+  "projectType": "existing",
+  "workflow": "gsd",
+  "modelProfile": "balanced",
+  "qualityGates": {
+    "requireExplicitApprovalForProductionChanges": false,
+    "requireExplicitApprovalForSchemaChanges": false,
+    "autoCommit": true,
+    "autoPush": false
+  },
+  "planning": {
+    "createPlanPr": false,
+    "createRoadmapPr": false,
+    "linkPlanPrToRoadmap": false,
+    "useEmojiInCommits": false
+  },
+  "execution": {
+    "autoCreatePhaseDirectory": true,
+    "autoCreateWaves": true,
+    "parallelizeIndependentTasks": true,
+    "waveSize": 4
+  },
+  "codebase": {
+    "path": ".",
+    "language": "swift",
+    "framework": "swiftui",
+    "hasTests": false,
+    "testPath": null,
+    "buildCommand": "xcodebuild -project Ollamac.xcodeproj -scheme Ollamac -destination 'platform=macOS'",
+    "testCommand": "xcodebuild test -project Ollamac.xcodeproj -scheme Ollamac -destination 'platform=macOS'"
+  },
+  "github": {
+    "repo": "kevinhermawan/Ollamac",
+    "defaultBranch": "main",
+    "useGitHubIssues": true,
+    "useGitHubPRs": true,
+    "useGitHubProjects": false
+  },
+  "agents": {
+    "explore": {
+      "maxDepth": 3,
+      "maxFiles": 50,
+      "includePatterns": ["**/*.swift"],
+      "excludePatterns": ["**/DerivedData/**", "**/.git/**", "**/build/**"]
+    },
+    "research": {
+      "maxDepth": 2,
+      "sources": ["github", "web"]
+    }
+  },
+  "tokens": {},
+  "version": "1.0.0",
+  "createdAt": "2024-05-01T17:16:00Z",
+  "createdBy": "gsd-new-project",
+  "notes": "Brownfield project - Ollamac macOS app for Ollama"
+}
