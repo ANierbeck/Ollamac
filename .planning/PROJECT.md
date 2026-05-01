@@ -60,13 +60,12 @@ Ollamac provides a native, user-friendly macOS application for interacting with 
 | Single maintainer | High | Grow contributor base, documentation |
 | No tests | High | Add test infrastructure, CI pipeline |
 | Tight coupling | Medium | Refactor with DI, protocols |
-| Security (HTTP only) | Critical | Add HTTPS support |
 | No backup/export | Medium | Add export functionality |
 
 ## Project Goals (Next 6 Months)
-1. Improve code quality and maintainability
-2. Add comprehensive test coverage
-3. Address security concerns (HTTPS support)
+1. Add MCP (Model Context Protocol) support to extend LLM capabilities
+2. Improve code quality and maintainability
+3. Add comprehensive test coverage
 4. Enhance user experience (performance, features)
 5. Grow contributor community
 
