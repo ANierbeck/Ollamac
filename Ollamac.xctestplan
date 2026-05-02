@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "B7664D88-C6C8-4C74-986B-956CDBDAC87C",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Ollamac.xcodeproj",
+      "identifier" : "0A4D35802AF541D900846890",
+      "name" : "Ollamac"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Ollamac.xcodeproj",
+        "identifier" : "8B8486492FA5576100AF7473",
+        "name" : "OllamacTests"
+      }
+    }
+  ],
+  "version" : 1
+}

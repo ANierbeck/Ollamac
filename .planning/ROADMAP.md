@@ -20,6 +20,21 @@
 
 ## Phase Structure
 
+### Phase 8: Performance Optimization
+**Duration**: 1-2 weeks  
+**Goal**: Address critical performance bottlenecks identified in codebase audit
+
+Based on comprehensive performance analysis, this phase addresses 10 critical bottlenecks:
+- String concatenation in streaming (O(n²) → O(n))
+- Scroll thrashing during streaming
+- Excessive SwiftData saves causing disk I/O storms
+- Unnecessary re-computations on every render
+- Plugin loading on main thread
+
+See `.planning/phases/08-performance-optimization/PLAN.md` for detailed breakdown.
+
+---
+
 ### Phase 1: ChatBackend Abstraction
 **Duration**: 1-2 weeks  
 **Goal**: Create protocol abstraction for chat backends
@@ -107,16 +122,62 @@
 
 ---
 
+### Phase 5: OllamaKit Local Integration
+**Duration**: 1-2 weeks
+**Goal**: Remove external OllamaKit package dependency and ensure local Sources/OllamaKit/Sources is used.
+
+| Task | ID | Effort | Priority | Dependencies | Status |
+|------|-----|--------|----------|--------------|--------|
+| Remove OllamaKit XCRemoteSwiftPackageReference from Xcode project | O-001 | Medium | P0 | Phase 4 | ⬜ |
+| Add local Sources/OllamaKit/Sources as target in Xcode | O-002 | Medium | P0 | O-001 | ⬜ |
+| Apply -strict-concurrency=minimal flag to OllamaKit target | O-003 | Small | P0 | O-002 | ⬜ |
+| Verify build succeeds without data race errors | O-004 | Small | P0 | O-003 | ⬜ |
+
+**Acceptance Criteria**:
+- [ ] External OllamaKit package dependency completely removed
+- [ ] Local Sources/OllamaKit/Sources integrated as target
+- [ ] -strict-concurrency=minimal flag applied
+- [ ] Build completes successfully without concurrency warnings
+
+**Outcome**: Local OllamaKit integration complete
+
+---
+
+### Phase 6: Swift 6 Concurrency Fixes
+**Duration**: 1-2 weeks
+**Goal**: Fix Sendable conformance errors and MainActor isolation issues discovered during Phase 5.
+
+| Task | ID | Effort | Priority | Dependencies | Status |
+|------|-----|--------|----------|--------------|--------|
+| Fix mutable stored properties in Sendable classes | S-001 | Medium | P0 | Phase 5 | ⬜ |
+| Resolve MainActor-isolated static properties | S-002 | Medium | P0 | Phase 5 | ⬜ |
+| Implement type conversion between OKGenerateResponse/OKModelResponse and ChatResponseChunk/[String] | S-003 | Medium | P0 | Phase 5 | ⬜ |
+| Fix non-final classes conforming to Sendable | S-004 | Medium | P0 | Phase 5 | ⬜ |
+
+**Acceptance Criteria**:
+- [ ] All Sendable conformance errors resolved
+- [ ] MainActor isolation issues fixed
+- [ ] Type conversions between OllamaKit and Chat types working
+- [ ] All non-final Sendable classes made final or refactored
+- [ ] Build completes without Swift concurrency warnings
+
+**Outcome**: Full Swift 6 concurrency compliance achieved
+
+---
+
 ## Phase Summary
 
 | Phase | Duration | Goal | Key Deliverables |
 |-------|----------|------|-------------------|
+| 8 | 1-2 weeks | Performance Optimization | 10 critical bottlenecks fixed, memory/CPU/disk improvements |
 | 1 | 1-2 weeks | ChatBackend Abstraction | Protocol + OllamaBackend + MCPBackend skeleton |
 | 2 | 1-2 weeks | Dependency Injection | DI in ChatView + MessageViewModel |
 | 3 | 1-2 weeks | Test Infrastructure | Test target + mocks + CI |
 | 4 | 1-2 weeks | Plugin Architecture | Plugin system + MCPBackend |
+| 5 | 1-2 weeks | OllamaKit Local Integration | Local OllamaKit target + concurrency flags |
+| 6 | 1-2 weeks | Swift 6 Concurrency Fixes | Sendable conformance + MainActor isolation + type conversions |
 
-**Total**: 4 phases, ~6 weeks, 16 requirements
+**Total**: 7 phases, ~9-14 weeks, 34+ requirements
 
 ---
 
@@ -144,6 +205,10 @@ Phase 2 (Dependency Injection) → depends on Phase 1
 Phase 3 (Test Infrastructure) → depends on Phase 1, 2
     ↓
 Phase 4 (Plugin Architecture) → depends on Phase 1, 2
+    ↓
+Phase 5 (OllamaKit Local Integration) → depends on Phase 4
+    ↓
+Phase 6 (Swift 6 Concurrency Fixes) → depends on Phase 5
 ```
 
 **Note**: Phase 3 (Tests) and Phase 4 (Plugin) can run in parallel after Phase 2
@@ -230,6 +295,9 @@ protocol ChatPlugin: ChatBackend {
 | 3.1.0 | Phase 1-2 | TBD | Architecture + DI |
 | 3.2.0 | Phase 3 | TBD | Testing |
 | 3.3.0 | Phase 4 | TBD | Plugin Architecture + MCP |
+| 3.4.0 | Phase 5 | TBD | OllamaKit Local Integration |
+| 3.5.0 | Phase 6 | TBD | Swift 6 Concurrency Fixes |
+| 3.6.0 | Phase 8 | TBD | Performance Optimization |
 
 ---
 
@@ -248,5 +316,5 @@ protocol ChatPlugin: ChatBackend {
 
 ---
 *Roadmap for MCP Architecture Milestone*
-*Single milestone with 4 phases, ~6 weeks total*
-*Focus: Architecture adaptation, test introduction, plugin foundation*
+*Single milestone with 7 phases, ~9-14 weeks total*
+*Focus: Architecture adaptation, test introduction, plugin foundation, OllamaKit integration, Swift 6 concurrency, Performance Optimization*

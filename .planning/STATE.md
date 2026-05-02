@@ -24,10 +24,11 @@
 ### Current Milestone
 - **Name**: MCP Architecture Foundation
 - **Objective**: Adapt architecture to support MCP, introduce tests, establish plugin architecture
-- **Duration**: ~6 weeks
-- **Status**: Not started
-- **Phases**: 4 phases (ChatBackend Abstraction, DI, Test Infrastructure, Plugin Architecture)
-- **Total Requirements**: 16 (all P0)
+- **Duration**: ~8-12 weeks
+- **Status**: In Progress
+- **Phases**: 7 phases (ChatBackend Abstraction, DI, Test Infrastructure + 3.1 Build Fix, Plugin Architecture, OllamaKit Local Integration, Swift 6 Concurrency Fixes, Performance Optimization)
+- **Total Requirements**: 16 (all P0) + 3 (Phase 3.1) + 20 (Phase 4) + 4 (Phase 5) + 4 (Phase 6) + 10 (Phase 8)
+- **Completed Requirements**: 14/16 + 3/3 + 20/20 + 4/4 + 4/4 (Phase 6)
 
 ### Recent Actions
 - [2024-05-01] Codebase mapping completed (gsd-map-codebase)
@@ -41,9 +42,18 @@
   - 4 phases, 16 requirements, ~6 weeks
 
 ### Current Workflow State
-- **Phase**: Pre-execution (milestone defined)
+- **Phase**: Phase 7 EXECUTING (Plugin UI Visibility Fixes) → Phase 8 PENDING (Performance Optimization)
 - **Milestone**: MCP Architecture Foundation (active)
-- **Next Step**: `/gsd-plan-phase 1` to start Phase 1 (ChatBackend Abstraction)
+- **Completed Phases**:
+  - Phase 1: ChatBackend Abstraction - COMPLETED (architecture implemented)
+  - Phase 2: Dependency Injection - COMPLETED (DI via SwiftUI Environment)
+  - Phase 3: Test Infrastructure - COMPLETED (files created)
+  - Phase 3.1: Build Fix & Test Integration - COMPLETED (Xcode project updated, tests integrated)
+  - Phase 4: Plugin Architecture Foundation - COMPLETED (plugin system implemented)
+  - Phase 5: OllamaKit Local Integration - COMPLETED
+  - Phase 6: Swift 6 Concurrency Fixes - COMPLETED
+  - Phase 8: Performance Optimization - NOT STARTED (10 bottlenecks identified)
+- **Next Step**: Complete Phase 7 execution, then start Phase 8
 
 ---
 
@@ -75,8 +85,8 @@ This milestone establishes the foundation for MCP (Model Context Protocol) suppo
 ### Goals
 | # | Goal | Status | Owner |
 |---|------|--------|-------|
-| 1 | Adapt architecture to support MCP | Not started | TBD |
-| 2 | Introduce tests and CI pipeline | Not started | TBD |
+| 1 | Adapt architecture to support MCP | ✅ COMPLETED | Team |
+| 2 | Introduce tests and CI pipeline | ✅ COMPLETED | Team |
 | 3 | Establish plugin architecture foundation | Not started | TBD |
 
 ### Key Requirements
@@ -87,11 +97,11 @@ This milestone establishes the foundation for MCP (Model Context Protocol) suppo
 - **Epic 3 (Plugin)**: 5 requirements, ~2 weeks
 
 ### Blockers
-| Blocker | Impact | Resolution |
-|---------|--------|------------|
-| Tight coupling between views and OllamaKit | Blocks DI and plugin architecture | Complete Phase 1 and 2 |
-| No test infrastructure | Blocks verification of changes | Complete Phase 3 |
-| No plugin system | Blocks MCP integration | Complete Phase 4 |
+| Blocker | Impact | Resolution | Status |
+|---------|--------|------------|--------|
+| Tight coupling between views and OllamaKit | Blocks DI and plugin architecture | Complete Phase 1 and 2 | ✅ RESOLVED |
+| No test infrastructure | Blocks verification of changes | Complete Phase 3 + 3.1 | ✅ RESOLVED |
+| No plugin system | Blocks MCP integration | Complete Phase 4 | ⚠️ ACTIVE |
 
 ---
 
@@ -133,14 +143,26 @@ gsd-new-milestone (for MCP Architecture Milestone)
 ## Next Actions
 
 ### Immediate (Ready to Execute)
-1. **`/gsd-plan-phase 1`** - Plan Phase 1 (ChatBackend Abstraction)
+1. **Complete Phase 7 execution** - Plugin UI Visibility Fixes
 
 ### Alternative
-1. **`/gsd-plan-milestone-gaps`** - Review milestone and identify gaps
-2. **Manual phase planning** - Create PLAN.md for Phase 1 manually
+1. **`/gsd-verify-work`** - Validate Phase 7 deliverables
+2. **`/gsd-execute-phase 7`** - Continue execution if incomplete
 
 ### Recommended Next Step
-Run `/gsd-plan-phase 1` to start planning Phase 1: ChatBackend Abstraction
+Complete manual testing for Phase 7 (VT-01 through VT-08) to validate plugin visibility fixes
+
+### Completed Work
+- Phase 1: ChatBackend protocol, OllamaBackend, MCPBackend implemented
+- Phase 2: Dependency Injection via SwiftUI Environment
+- Phase 3: Test infrastructure (mocks, unit tests, CI pipeline) - Files created
+- Phase 3.1: Build Fix & Test Integration - Xcode project updated, compiler flag added, test files integrated
+- Phase 4: Plugin Architecture Foundation - Plugin protocol, registry, discovery, configuration UI
+- Phase 5: OllamaKit Local Integration - Local plugin support
+- Phase 6: Swift 6 Concurrency Fixes - Sendable conformance, async fixes
+- Phase 7: Plugin UI Visibility Fixes - EXECUTING (Wave 1 & 2 complete, Wave 3 pending manual testing)
+- Phase 8: Performance Optimization - PENDING (10 bottlenecks identified, ready to execute)
+- Phase 8: Performance Optimization - PENDING (10 critical bottlenecks: string concat, scroll, caching, I/O)
 
 ---
 
@@ -156,14 +178,15 @@ Run `/gsd-plan-phase 1` to start planning Phase 1: ChatBackend Abstraction
 
 ### Documentation Metrics
 - **Codebase Docs**: 7 files, ~1,984 lines (.planning/codebase/)
-- **Planning Docs**: 5 files, ~1,500+ lines (.planning/)
-- **Total Docs**: 12 files, ~3,500+ lines
+- **Planning Docs**: 6 files, ~2,500+ lines (.planning/)
+- **Total Docs**: 13 files, ~4,500+ lines
 
 ### Milestone Metrics
-- **Requirements**: 16 (all P0)
-- **Phases**: 4
-- **Duration**: ~6 weeks
-- **Effort**: ~40-50 person-days
+- **Requirements**: 16 (all P0) + 3 (Phase 3.1) + 20 (Phase 4) + 4 (Phase 5) + 4 (Phase 6) + 9 (Phase 7) + 10 (Phase 8)
+- **Phases**: 8 (7 completed/executing, 1 pending)
+- **Duration**: ~9-14 weeks
+- **Effort**: ~55-65 person-days
+- **Progress**: Phase 7 executing (Waves 1-2 complete, Wave 3 pending manual testing), Phase 8 ready
 
 ---
 
@@ -171,9 +194,14 @@ Run `/gsd-plan-phase 1` to start planning Phase 1: ChatBackend Abstraction
 - This is a brownfield project with existing code and users
 - MCP integration requires architectural changes first
 - Focus on sequential milestone execution
-- Single milestone (MCP Architecture Foundation) before moving to next
+- Single milestone (MCP Architecture Foundation) with 8 phases
 - Architecture changes must maintain backward compatibility
+- Phase 7 addresses critical UI bug: Plugins tab visibility in Settings
+- Phase 8 addresses performance bottlenecks: string concat, scroll, caching, I/O
 
 ---
-*Last updated: 2024-05-01*
-*State file reset for MCP Architecture Milestone*
+*Last updated: 2025-05-02*
+*Phase 8 (Performance Optimization) PENDING*
+*Phase 7 (Plugin UI Visibility Fixes) EXECUTING*
+*Phase 6 (Swift 6 Concurrency Fixes) COMPLETED*
+*State file updated after gsd-execute-phase 7 execution (Waves 1-2)*
