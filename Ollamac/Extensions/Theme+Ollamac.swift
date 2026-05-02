@@ -9,6 +9,7 @@ import Foundation
 import MarkdownUI
 import SwiftUI
 
+@MainActor
 class ThemeCache {
     static let shared = ThemeCache()
     private var cachedTheme: Theme?
@@ -64,7 +65,7 @@ class ThemeCache {
 }
 
 extension Theme {
-    static var ollamac: Theme {
+    @MainActor static var ollamac: Theme {
         ThemeCache.shared.getTheme()
     }
 }

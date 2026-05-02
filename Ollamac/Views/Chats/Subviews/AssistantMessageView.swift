@@ -35,7 +35,7 @@ struct AssistantMessageView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Assistant")
                 .font(Font.system(size: fontSize).weight(.semibold))
-                .foregroundStyle(.accent)
+                .foregroundStyle(Color.blue)
             
             if isGenerating && content.isEmpty {
                 ProgressView()

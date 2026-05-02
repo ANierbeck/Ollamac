@@ -1,0 +1,69 @@
+name: Ollamac
+options:
+  bundleIdPrefix: com.kevinhermawan
+  deploymentTarget:
+    macOS: 14.0
+
+packages:
+  Defaults:
+    url: https://github.com/sindresorhus/Defaults.git
+    from: 8.2.0
+  Highlightr:
+    url: https://github.com/raspu/Highlightr.git
+    from: 2.2.1
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.7.0
+  ChatField:
+    url: https://github.com/kevinhermawan/ChatField.git
+    from: 3.0.4
+  AppInfo:
+    url: https://github.com/kevinhermawan/AppInfo.git
+    from: 1.0.2
+  ViewState:
+    url: https://github.com/kevinhermawan/ViewState.git
+    from: 1.2.2
+  ViewCondition:
+    url: https://github.com/kevinhermawan/ViewCondition.git
+    from: 1.0.5
+  SwiftUIIntrospect:
+    url: https://github.com/siteline/swiftui-introspect.git
+    from: 1.3.0
+  NetworkImage:
+    url: https://github.com/gonzalezreal/NetworkImage
+    from: 6.0.0
+  swift-markdown-ui:
+    url: https://github.com/gonzalezreal/swift-markdown-ui.git
+    from: 2.3.1
+
+targets:
+  Ollamac:
+    type: application
+    platform: macOS
+    dependencies:
+      - package: Defaults
+      - package: Highlightr
+      - package: Sparkle
+      - package: ChatField
+      - package: AppInfo
+      - package: ViewState
+      - package: ViewCondition
+      - package: SwiftUIIntrospect
+      - package: NetworkImage
+      - package: swift-markdown-ui
+    sources:
+      - path: Ollamac
+        excludes: ["Preview Content", "Resources"]
+      - path: Sources/OllamaKit/Sources
+    resources:
+      - path: Ollamac/Resources
+    settings:
+      base:
+        INFOPLIST_FILE: Ollamac/Resources/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.kevinhermawan.Ollamac
+        WRAPPER_EXTENSION: app
+        MACOSX_DEPLOYMENT_TARGET: 14.0
+        SWIFT_VERSION: 5.0
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
+    swiftSettings:
+      unsafeFlags: ["-strict-concurrency=minimal"]

@@ -14,8 +14,7 @@ import SwiftUI
 final class ChatViewModel {
     private var modelContext: ModelContext
     private var _chatNameTemp: String = ""
-    
-    @Environment(ChatBackend.self) private var chatBackend
+    private nonisolated let chatBackend: any ChatBackend
     
     var models: [String] = []
     
@@ -46,8 +45,9 @@ final class ChatViewModel {
         }
     }
     
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, chatBackend: any ChatBackend) {
         self.modelContext = modelContext
+        self.chatBackend = chatBackend
     }
     
     func fetchModels() {

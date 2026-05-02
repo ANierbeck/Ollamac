@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.kevinhermawan.Ollamac</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>3.0.3</string>
 	<key>HELP_URL</key>
 	<string>https://github.com/kevinhermawan/Ollamac/issues</string>
 	<key>SUEnableInstallerLauncherService</key>

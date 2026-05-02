@@ -1,0 +1,6 @@
+// Config.xcconfig - Project-wide build configuration
+// Created for Phase 3.1: Build Fix & Test Integration
+
+// Swift 6: Use minimal concurrency checking to maintain compatibility
+// with OllamaKit 5.0.x which hasn't been fully updated for Swift 6 Sendable requirements
+OTHER_SWIFT_FLAGS = -strict-concurrency=minimal

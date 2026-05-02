@@ -8,10 +8,10 @@
 import Foundation
 
 /// HTTP-based MCP client implementation using JSON-RPC 2.0 transport
-public struct HTTPMCPClient: MCPClient {
+public final class HTTPMCPClient: MCPClient {
     public let baseURL: URL
     private let urlSession: URLSession
-    private var isConnected: Bool = false
+    @MainActor private var isConnected: Bool = false
 
     public init(baseURL: URL, urlSession: URLSession = .shared) {
         self.baseURL = baseURL
@@ -21,16 +21,16 @@ public struct HTTPMCPClient: MCPClient {
     public func connect() async -> Bool {
         do {
             let response: MCPListToolsResponse = try await sendRequest(method: "tools/list", params: nil)
-            isConnected = true
+            await MainActor.run { isConnected = true }
             return true
         } catch {
-            isConnected = false
+            await MainActor.run { isConnected = false }
             return false
         }
     }
 
     public func disconnect() async {
-        isConnected = false
+        await MainActor.run { isConnected = false }
     }
 
     public func listTools() async throws -> [MCPTool] {
@@ -47,17 +47,19 @@ public struct HTTPMCPClient: MCPClient {
     // MARK: - Private Methods
 
     private func sendRequest<T: Decodable>(method: String, params: [String: Any]?) async throws -> T {
-        let requestBody = JSONRPCRequest(
-            jsonrpc: "2.0",
-            method: method,
-            params: params,
-            id: UUID().uuidString
-        )
+        var requestBody: [String: Any] = [
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": UUID().uuidString
+        ]
+        if let params = params {
+            requestBody["params"] = params
+        }
 
         var request = URLRequest(url: baseURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode(requestBody)
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
 
         let (data, response) = try await urlSession.data(for: request)
 
@@ -85,24 +87,16 @@ public struct HTTPMCPClient: MCPClient {
 
 // MARK: - JSON-RPC 2.0 Types
 
-private struct JSONRPCRequest: Codable {
-    let jsonrpc: String
-    let method: String
-    let params: [String: Any]?
-    let id: String
-}
-
-private struct JSONRPCResponse<T: Decodable>: Codable {
+private struct JSONRPCResponse<T: Decodable>: Decodable {
     let jsonrpc: String
     let result: T?
-    let error: JSONRPCError?
+    let error: JSONRPCErrorResponse?
     let id: String
 }
 
-private struct JSONRPCError: Codable {
-    let code: Int
-    let message: String
-    let data: AnyCodable?
+public struct JSONRPCErrorResponse: Decodable, Sendable {
+    public let code: Int
+    public let message: String
 }
 
 // MARK: - MCP Response Types
@@ -121,7 +115,7 @@ public enum MCPError: Error {
     case invalidURL
     case invalidResponse
     case httpError(statusCode: Int)
-    case rpcError(JSONRPCError)
+    case rpcError(JSONRPCErrorResponse)
     case noResult
     case decodingError(Error)
 }

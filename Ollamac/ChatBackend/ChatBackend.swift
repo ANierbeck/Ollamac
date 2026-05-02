@@ -36,7 +36,7 @@ public protocol ChatBackend: Sendable {
 // MARK: - Supporting Types
 
 /// Role of a participant in a chat conversation
-public enum ChatRole: String, Codable {
+public enum ChatRole: String, Codable, Sendable {
     /// User message (from the human)
     case user
     /// Assistant message (from the AI)
@@ -46,7 +46,7 @@ public enum ChatRole: String, Codable {
 }
 
 /// Individual message in a chat conversation
-public struct ChatMessage: Codable {
+public struct ChatMessage: Codable, Sendable {
     /// Role of the message sender
     public let role: ChatRole
     /// Content of the message
@@ -59,7 +59,7 @@ public struct ChatMessage: Codable {
 }
 
 /// Options for chat completion
-public struct ChatOptions: Codable {
+public struct ChatOptions: Codable, Sendable {
     /// Sampling temperature (0.0 - 1.0)
     /// Lower = more deterministic, Higher = more creative
     public var temperature: Double?
@@ -76,7 +76,7 @@ public struct ChatOptions: Codable {
 }
 
 /// Complete chat request to send to a backend
-public struct ChatRequest: Codable {
+public struct ChatRequest: Codable, Sendable {
     /// Model to use for completion
     public let model: String
     /// List of messages in the conversation

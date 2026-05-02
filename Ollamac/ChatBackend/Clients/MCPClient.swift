@@ -36,7 +36,7 @@ public protocol MCPClient: Sendable {
 // MARK: - Supporting Types
 
 /// Represents an MCP tool (function/endpoint) provided by a server
-public struct MCPTool: Codable, Sendable {
+public struct MCPTool: Codable {
     /// Unique name of the tool
     public let name: String
     /// Human-readable description of the tool
@@ -52,7 +52,7 @@ public struct MCPTool: Codable, Sendable {
 }
 
 /// Defines the input schema for an MCP tool
-public struct MCPToolInputSchema: Codable, Sendable {
+public struct MCPToolInputSchema: Codable {
     /// Type of the input (default: "object")
     public let type: String
     /// Properties (parameters) of the input
@@ -68,7 +68,7 @@ public struct MCPToolInputSchema: Codable, Sendable {
 }
 
 /// Defines the schema for a single property in an MCP tool input
-public struct MCPPropertySchema: Codable, Sendable {
+public struct MCPPropertySchema: Codable {
     /// Type of the property (string, number, boolean, array, object, etc.)
     public let type: String
     /// Human-readable description of the property
@@ -127,7 +127,7 @@ public struct MCPTextContent: Codable, Sendable {
 // MARK: - AnyCodable for flexible property values
 
 /// A type-erased Codable wrapper for handling arbitrary JSON values
-public struct AnyCodable: Codable, Sendable {
+public struct AnyCodable: Codable {
     public let value: Any
 
     public init(_ value: Any) {

@@ -28,7 +28,7 @@ struct UserMessageView: View {
             VStack(alignment: .trailing) {
                 Text(content)
                     .padding(12)
-                    .background(.accent)
+                    .background(Color.blue)
                     .foregroundColor(.white)
                     .textSelection(.enabled)
                     .font(Font.system(size: fontSize))

@@ -14,16 +14,16 @@ import SwiftUI
 final class MessageViewModel {
     private var modelContext: ModelContext
     private var generationTask: Task<Void, Never>?
-    
-    @Environment(ChatBackend.self) private var chatBackend
+    private nonisolated let chatBackend: any ChatBackend
     
     var messages: [Message] = []
     var tempResponse: String = ""
     var loading: MessageViewModelLoading? = nil
     var error: MessageViewModelError? = nil
     
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, chatBackend: any ChatBackend) {
         self.modelContext = modelContext
+        self.chatBackend = chatBackend
     }
     
     func load(of chat: Chat?) {
@@ -59,7 +59,8 @@ final class MessageViewModel {
             do {
                 let request = message.toChatRequest(messages: self.messages)
                 
-                for try await chunk in chatBackend.chat(request: request) {
+                let stream = try await chatBackend.chat(request: request)
+                for try await chunk in stream {
                     if Task.isCancelled { break }
                     
                     tempResponse = tempResponse + (chunk.message?.content ?? "")
@@ -116,7 +117,8 @@ final class MessageViewModel {
             do {
                 let request = lastMessage.toChatRequest(messages: self.messages)
                 
-                for try await chunk in chatBackend.chat(request: request) {
+                let stream = try await chatBackend.chat(request: request)
+                for try await chunk in stream {
                     if Task.isCancelled { break }
                     
                     tempResponse = tempResponse + (chunk.message?.content ?? "")
@@ -167,7 +169,8 @@ final class MessageViewModel {
             do {
                 var isReasoningContent = false
                 
-                for try await chunk in chatBackend.chat(request: request) {
+                let stream = try await chatBackend.chat(request: request)
+                for try await chunk in stream {
                     if Task.isCancelled { break }
                     
                     guard let content = chunk.message?.content else { continue }

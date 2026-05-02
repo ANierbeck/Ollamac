@@ -11,7 +11,7 @@ import SwiftUIIntrospect
 
 struct ChatPreferencesView: View {
     @Environment(ChatViewModel.self) private var chatViewModel
-    @Environment(ChatBackend.self) private var chatBackend
+    @Environment(\.chatBackend) private var chatBackend
     
     @State private var isUpdateOllamaHostPresented: Bool = false
     @State private var isUpdateSystemPromptPresented: Bool = false
@@ -51,7 +51,7 @@ struct ChatPreferencesView: View {
                                 .controlSize(.small)
                         } else {
                             Text("Refresh")
-                                .foregroundColor(.accent)
+                                .foregroundColor(Color.blue)
                         }
                     }
                     .buttonStyle(.accessoryBar)
@@ -74,7 +74,7 @@ struct ChatPreferencesView: View {
                     
                     Button("Change", action: { isUpdateOllamaHostPresented = true })
                         .buttonStyle(.accessoryBar)
-                        .foregroundColor(.accent)
+                        .foregroundColor(Color.blue)
                 }
             }
             .onChange(of: host) { _, newValue in
@@ -93,7 +93,7 @@ struct ChatPreferencesView: View {
                     
                     Button("Change", action: { isUpdateSystemPromptPresented = true })
                         .buttonStyle(.accessoryBar)
-                        .foregroundColor(.accent)
+                        .foregroundColor(Color.blue)
                 }
             }
             .onChange(of: systemPrompt) { _, newValue in

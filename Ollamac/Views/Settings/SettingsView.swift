@@ -16,6 +16,11 @@ struct SettingsView: View {
                         Label("General", systemImage: "gearshape")
                     }
                 
+                PluginSettingsView()
+                    .tabItem {
+                        Label("Plugins", systemImage: "puzzlepiece")
+                    }
+                
                 ExperimentalView()
                     .tabItem {
                         Label("Experimental", systemImage: "testtube.2")

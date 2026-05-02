@@ -20,7 +20,7 @@ public struct MCPBackend: ChatBackend {
         self.client = client
     }
 
-    public convenience init(baseURL: URL) {
+    public init(baseURL: URL) {
         let httpClient = HTTPMCPClient(baseURL: baseURL)
         self.init(baseURL: baseURL, client: httpClient)
     }
